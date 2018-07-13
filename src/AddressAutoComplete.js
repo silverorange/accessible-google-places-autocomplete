@@ -67,7 +67,7 @@ export default class AddressAutoComplete extends Component {
           source={this.getSuggestions}
           minLength={4}
           required
-          displayMenu='overlay'
+          displayMenu="overlay"
           tNoResults={this.getNoResultsMessage}
           onConfirm={onConfirm}
         />
