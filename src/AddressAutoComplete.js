@@ -20,11 +20,17 @@ export default class AddressAutoComplete extends Component {
 
     this.onApiLoad = this.onApiLoad.bind(this);
     this.getSuggestions = this.getSuggestions.bind(this);
+    this.getNoResultsMessage = this.getNoResultsMessage.bind(this);
   }
 
   onApiLoad() {
     this.setState(() => ({ apiLoaded: true }));
     this.service = new google.maps.places.AutocompleteService();
+  }
+
+  getNoResultsMessage() {
+    const { noResultsMessage } = this.props;
+    return noResultsMessage;
   }
 
   getSuggestions(query, populateResults) {
@@ -61,7 +67,8 @@ export default class AddressAutoComplete extends Component {
           source={this.getSuggestions}
           minLength={4}
           required
-          displayMenu="overlay"
+          displayMenu='overlay'
+          tNoResults={this.getNoResultsMessage}
           onConfirm={onConfirm}
         />
       );
@@ -73,5 +80,10 @@ export default class AddressAutoComplete extends Component {
 AddressAutoComplete.propTypes = {
   googleMapsApiKey: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
-  countryCode: PropTypes.string.isRequired
+  countryCode: PropTypes.string.isRequired,
+  noResultsMessage: PropTypes.string
+};
+
+AddressAutoComplete.defaultProps = {
+  noResultsMessage: 'Address not found'
 };
