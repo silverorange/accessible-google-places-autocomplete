@@ -1,0 +1,38 @@
+{
+  "name": "accessible-google-places-autocomplete-demo",
+  "contributors": [
+    "Michael Gauthier <mike@silverorange.com>",
+    "Ncik Burka <nick@silverorange.com>"
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/silverorange/accessible-google-places-autocomplete",
+  "description": "Demo of accessible Google Places autocomplete component for React",
+  "version": "1.0.0",
+  "dependencies": {
+    "accessible-google-places-autocomplete": "file:../",
+    "get-value": "^3.0.1",
+    "prop-types": "^15.6.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-scripts": "1.1.4"
+  },
+  "devDependencies": {
+    "babel-eslint": "8.0.1",
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-prettier": "^2.6.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "5.1.1",
+    "eslint-plugin-prettier": "^2.3.1",
+    "eslint-plugin-react": "^7.4.0",
+    "prettier": "^1.7.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  }
+}

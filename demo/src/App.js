@@ -1,5 +1,5 @@
 import React from 'react';
-import AddressAutoComplete from './AddressAutoComplete';
+import AccessibleGooglePlacesAutocomplete from 'accessible-google-places-autocomplete';
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
           This is an automatic address auto-complete. Use arrow keys to choose
           options.
         </div>
-        <AddressAutoComplete
+        <AccessibleGooglePlacesAutocomplete
           id="address_input"
           countryCode="ca"
           googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
