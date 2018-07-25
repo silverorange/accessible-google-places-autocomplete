@@ -19,7 +19,7 @@ practices and is compatible with many assistive technologies.
 Install it by running:
 
 ```
-npm install --save more-accessible-google-places-autocomplete
+yarn add more-accessible-google-places-autocomplete
 ```
 
 In your React application, you can import a bundle that will use it:
