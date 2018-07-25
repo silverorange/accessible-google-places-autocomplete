@@ -104,7 +104,7 @@ export default class AddressAutoComplete extends Component {
   getStatusResultsMessage(length, contentSelectedOption) {
     const { t } = this.props;
 
-    if (!contentSelectedOption) {
+    if (contentSelectedOption) {
       return '';
     }
 
