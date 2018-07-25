@@ -8,6 +8,14 @@ Google's Places Auto-Complete widget is extremely popular for finding addresses,
 
 [Get a Google Places API key](https://developers.google.com/places/web-service/get-api-key) from Google.
 
+Install it by running:
+
+```
+npm install --save more-accessible-google-places-autocomplete
+```
+
+In your React application, you can import a bundle that will use it:
+
 ```
 import React from 'react'
 import ReactDom from 'react'
