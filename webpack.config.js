@@ -31,16 +31,6 @@ module.exports = {
           // Process JS with Babel.
           {
             test: /\.js$/,
-            include: path.resolve(__dirname, '../../src'),
-            loader: require.resolve('babel-loader'),
-            options: {
-              presets: [require.resolve('babel-preset-react-app')],
-              compact: true
-            }
-          },
-          // Process JS with Babel.
-          {
-            test: /\.js$/,
             include: path.resolve(__dirname, 'src'),
             loader: require.resolve('babel-loader'),
             options: {
