@@ -43,4 +43,4 @@ ReactDOM.render(
 
 ## License
 
-[MIT](LICENSE.txt).
+[MIT](LICENSE).
