@@ -2,7 +2,15 @@
 
 ## About
 
-Google's Places Auto-Complete widget is extremely popular for finding addresses, but its default implementation is a simple input box that isn't accessible for people using screen-readers or other assistive devices. This leverages the [Accessible autocomplete](https://github.com/alphagov/accessible-autocomplete) by the UK Government Digital Service and applies it to the Google Places API to make address selection accessible to all. The Accessible Autocomplete follows the [WAI-ARIA](https://www.w3.org/WAI/standards-guidelines/aria/) best practices and is compatible with many assistive technologies.
+Google's Places Auto-Complete widget is extremely popular for finding
+addresses, but its default implementation is a simple input box that
+isn't accessible for people using screen-readers or other assistive
+devices. This leverages the
+[Accessible autocomplete](https://github.com/alphagov/accessible-autocomplete)
+by the UK Government Digital Service and applies it to the Google Places API
+to make address selection accessible to all. The Accessible Autocomplete
+follows the [WAI-ARIA](https://www.w3.org/WAI/standards-guidelines/aria/) best
+practices and is compatible with many assistive technologies.
 
 ## Installation / usage
 
