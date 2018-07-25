@@ -25,14 +25,19 @@ yarn add more-accessible-google-places-autocomplete
 In your React application, you can import a bundle that will use it:
 
 ```js
-import React from 'react'
-import ReactDom from 'react'
-import AddressAutoComplete from './AddressAutoComplete';
+import React from 'react';
+import ReactDom from 'react';
+import AddressAutoComplete from 'more-accessible-google-places-autocomplete';
 
 ReactDOM.render(
-	<label for="address_input">Enter your address</label>
-	<AddressAutoComplete id="address_input" googleMapsApiKey="api-key-goes-here" />,
-	document.querySelector('#container')
+  <div>
+    <label for="address_input">Enter your address</label>
+    <AddressAutoComplete
+      id="address_input"
+      googleMapsApiKey="api-key-goes-here"
+    />
+  </div>,
+  document.querySelector('#container')
 );
 ```
 
