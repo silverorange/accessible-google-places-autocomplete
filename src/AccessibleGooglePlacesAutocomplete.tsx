@@ -1,23 +1,22 @@
-/* global google */
+declare var google: any;
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 import Script from 'react-load-script';
 import Autocomplete from 'accessible-autocomplete/react';
-import get from 'get-value';
+import * as get from 'get-value';
 
 function onConfirm() {
-  console.log('confirmed address');
+  // console.log('confirmed address');
 }
 
-function translate(message, context) {
+function translate(message: string, context: any): string {
   const messages = {
     addressAutoComplete: {
       noResults: 'Address not found',
       statusNoResults: 'No matching addresses',
-      statusSelectedOption: 'You’ve selected %{option}',
       statusResults:
-        '%{smart_count} matching address is available |||| %{smart_count} matching addresses are available'
+        '%{smart_count} matching address is available |||| %{smart_count} matching addresses are available',
+      statusSelectedOption: 'You’ve selected %{option}'
     }
   };
 
@@ -40,20 +39,67 @@ function translate(message, context) {
   }
 
   // Interpolate results.
-  return translation.replace(/%\{(.*?)\}/g, (match, contextKey) => {
-    if (context[contextKey] === undefined) {
-      return match;
+  return translation.replace(
+    /%\{(.*?)\}/g,
+    (match: string, contextKey: string): string => {
+      if (context[contextKey] === undefined) {
+        return match;
+      }
+      if (typeof context[contextKey] === 'string') {
+        return context[contextKey].replace(/\$/g, '$$');
+      }
+      return context[contextKey];
     }
-    if (typeof context[contextKey] === 'string') {
-      return context[contextKey].replace(/\$/g, '$$');
-    }
-    return context[contextKey];
-  });
+  );
 }
 
-export default class AccessibleGooglePlacesAutocomplete extends Component {
-  constructor(props) {
+interface IAccessibleGooglePlacesAutocompleteProps {
+  countryCode: string;
+  googleMapsApiKey: string;
+  id: string;
+  minLength?: number;
+  t?: any;
+}
+
+interface IAccessibleGooglePlacesAutocompleteState {
+  apiLoaded: boolean;
+}
+
+interface IPredictionSubstring {
+  length: number;
+  offset: number;
+}
+
+interface IPredictionTerm {
+  offset: number;
+  value: string;
+}
+
+interface IStructuredFormatting {
+  main_text: string;
+  main_text_matched_substrings: IPredictionSubstring[];
+  secondary_text: string;
+}
+
+interface IAutocompletePrediction {
+  description: string;
+  matched_substrings: IPredictionSubstring[];
+  place_id: string;
+  structured_formatting: IStructuredFormatting;
+  terms: IPredictionTerm[];
+  types: string[];
+}
+
+export class AccessibleGooglePlacesAutocomplete extends React.Component<
+  IAccessibleGooglePlacesAutocompleteProps,
+  IAccessibleGooglePlacesAutocompleteState
+> {
+  private service: any;
+  private currentStatusMessage: string;
+
+  constructor(props: IAccessibleGooglePlacesAutocompleteProps) {
     super(props);
+
     this.state = {
       apiLoaded: false
     };
@@ -64,32 +110,32 @@ export default class AccessibleGooglePlacesAutocomplete extends Component {
     this.onApiLoad = this.onApiLoad.bind(this);
     this.getSuggestions = this.getSuggestions.bind(this);
     this.getNoResultsMessage = this.getNoResultsMessage.bind(this);
+    this.getStatusResultsMessage = this.getStatusResultsMessage.bind(this);
     this.getStatusSelectedOptionMessage = this.getStatusSelectedOptionMessage.bind(
       this
     );
     this.getStatusNoResultsMessage = this.getStatusNoResultsMessage.bind(this);
-    this.getStatusResultsMessage = this.getStatusResultsMessage.bind(this);
   }
 
-  onApiLoad() {
+  public onApiLoad() {
     this.setState(() => ({ apiLoaded: true }));
     this.service = new google.maps.places.AutocompleteService();
   }
 
-  getNoResultsMessage() {
-    const { t } = this.props;
+  public getNoResultsMessage(): string {
+    const { t = translate } = this.props;
     return t('addressAutoComplete.noResults');
   }
 
-  getStatusSelectedOptionMessage(selectedOption) {
-    const { t } = this.props;
+  public getStatusSelectedOptionMessage(selectedOption: string): string {
+    const { t = translate } = this.props;
     return t('addressAutoComplete.statusSelectedOption', {
       option: selectedOption
     });
   }
 
-  getStatusNoResultsMessage() {
-    const { t } = this.props;
+  public getStatusNoResultsMessage(): string {
+    const { t = translate } = this.props;
     const statusNoResults = t('addressAutoComplete.statusNoResults');
 
     // don't repeat "No matching addresses" over and over
@@ -101,8 +147,11 @@ export default class AccessibleGooglePlacesAutocomplete extends Component {
     return statusNoResults;
   }
 
-  getStatusResultsMessage(length, contentSelectedOption) {
-    const { t } = this.props;
+  public getStatusResultsMessage(
+    length: number,
+    contentSelectedOption: string
+  ): string {
+    const { t = translate } = this.props;
 
     if (contentSelectedOption) {
       return '';
@@ -121,16 +170,16 @@ export default class AccessibleGooglePlacesAutocomplete extends Component {
     return statusResults;
   }
 
-  getSuggestions(query, populateResults) {
+  public getSuggestions(query: string, populateResults: any): void {
     const { countryCode } = this.props;
 
     const request = {
+      componentRestrictions: { country: countryCode },
       input: query,
-      types: ['geocode'],
-      componentRestrictions: { country: countryCode }
+      types: ['geocode']
     };
 
-    function getPlaces(predictions, status) {
+    function getPlaces(predictions: IAutocompletePrediction[], status: string) {
       if (status !== google.maps.places.PlacesServiceStatus.OK) {
         populateResults([]);
         return;
@@ -143,11 +192,12 @@ export default class AccessibleGooglePlacesAutocomplete extends Component {
     this.service.getPlacePredictions(request, getPlaces);
   }
 
-  render() {
-    const { googleMapsApiKey, id, minLength } = this.props;
+  public render() {
+    const { googleMapsApiKey, id, minLength = 4 } = this.props;
     const { apiLoaded } = this.state;
     const encodedKey = encodeURIComponent(googleMapsApiKey);
     const googleMapsApi = `https://maps.googleapis.com/maps/api/js?key=${encodedKey}&libraries=places`;
+
     if (apiLoaded) {
       return (
         <Autocomplete
@@ -164,19 +214,7 @@ export default class AccessibleGooglePlacesAutocomplete extends Component {
         />
       );
     }
+
     return <Script url={googleMapsApi} onLoad={this.onApiLoad} />;
   }
 }
-
-AccessibleGooglePlacesAutocomplete.propTypes = {
-  googleMapsApiKey: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  countryCode: PropTypes.string.isRequired,
-  minLength: PropTypes.number,
-  t: PropTypes.func
-};
-
-AccessibleGooglePlacesAutocomplete.defaultProps = {
-  minLength: 4,
-  t: translate
-};

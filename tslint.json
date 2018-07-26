@@ -1,0 +1,8 @@
+{
+  "extends": ["tslint:latest", "tslint-config-prettier"],
+  "rules": {
+    "no-implicit-dependencies": [true, "dev"],
+    "ordered-imports": false,
+    "no-submodule-imports": [true, "accessible-autocomplete/react"]
+  }
+}

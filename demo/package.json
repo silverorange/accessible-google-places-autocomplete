@@ -9,7 +9,7 @@
   "description": "Demo of accessible Google Places autocomplete component for React",
   "version": "1.0.0",
   "dependencies": {
-    "accessible-google-places-autocomplete": "file:../",
+    "accessible-google-places-autocomplete": "file:..",
     "get-value": "^3.0.1",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
