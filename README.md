@@ -42,6 +42,25 @@ ReactDOM.render(
 );
 ```
 
+## Building
+
+The component is distributed as ES5 code in the `dist/` folder. To build the
+ES5 code from the `src/` folder Webpack is used.
+
+1.  make your changes in `src/`
+2.  run `yarn build`
+3.  commit, tag, and publish new release.
+
+## Testing
+
+There is a demo application provided in the repo you can use to test out
+the component.
+
+1.  `cd demo/`
+2.  copy `.env.example` to `.env` and add your Google Places key.
+3.  `yarn install`
+4.  `yarn start`
+
 ## License
 
 [MIT](LICENSE)

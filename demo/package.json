@@ -1,0 +1,25 @@
+{
+  "name": "accessible-google-places-autocomplete-demo",
+  "contributors": [
+    "Michael Gauthier <mike@silverorange.com>",
+    "Nick Burka <nick@silverorange.com>"
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/silverorange/accessible-google-places-autocomplete",
+  "description": "Demo of accessible Google Places autocomplete component for React",
+  "version": "1.0.0",
+  "dependencies": {
+    "accessible-google-places-autocomplete": "file:../",
+    "get-value": "^3.0.1",
+    "prop-types": "^15.6.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-scripts": "1.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}

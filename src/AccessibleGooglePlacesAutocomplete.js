@@ -51,7 +51,7 @@ function translate(message, context) {
   });
 }
 
-export default class AddressAutoComplete extends Component {
+export default class AccessibleGooglePlacesAutocomplete extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -168,7 +168,7 @@ export default class AddressAutoComplete extends Component {
   }
 }
 
-AddressAutoComplete.propTypes = {
+AccessibleGooglePlacesAutocomplete.propTypes = {
   googleMapsApiKey: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
   countryCode: PropTypes.string.isRequired,
@@ -176,7 +176,7 @@ AddressAutoComplete.propTypes = {
   t: PropTypes.func
 };
 
-AddressAutoComplete.defaultProps = {
+AccessibleGooglePlacesAutocomplete.defaultProps = {
   minLength: 4,
   t: translate
 };
