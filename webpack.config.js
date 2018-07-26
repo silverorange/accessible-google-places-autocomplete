@@ -2,22 +2,20 @@ const path = require('path');
 
 const autoprefixer = require('autoprefixer');
 const postCssFlexbugsFixes = require('postcss-flexbugs-fixes');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const nodeExternals = require('webpack-node-externals');
-
-process.env.NODE_ENV = 'production';
 
 module.exports = {
   bail: true,
   devtool: 'source-map',
-  entry: path.resolve(__dirname, 'src/AccessibleGooglePlacesAutocomplete.js'),
+  entry: path.resolve(__dirname, 'src/AccessibleGooglePlacesAutocomplete.tsx'),
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'AccessibleGooglePlacesAutocomplete.es5.js',
     libraryTarget: 'commonjs2'
   },
   resolve: {
-    extensions: ['.js']
+    extensions: ['.js', '.jsx', '.ts', '.tsx']
   },
   module: {
     strictExportPresence: true,
@@ -28,61 +26,44 @@ module.exports = {
         // match the requirements. When no loader matches it will fall
         // back to the "file" loader at the end of the loader list.
         oneOf: [
-          // Process JS with Babel.
           {
-            test: /\.js$/,
+            test: /\.[jt]sx?$/,
             include: path.resolve(__dirname, 'src'),
-            loader: require.resolve('babel-loader'),
-            options: {
-              presets: [require.resolve('babel-preset-react-app')],
-              compact: true
-            }
+            loader: require.resolve('ts-loader')
           },
           {
             test: /\.css$/,
-            loader: ExtractTextPlugin.extract(
-              Object.assign(
-                {
-                  fallback: {
-                    loader: require.resolve('style-loader'),
-                    options: {
-                      hmr: false
-                    }
-                  },
-                  use: [
-                    {
-                      loader: require.resolve('css-loader'),
-                      options: {
-                        importLoaders: 1,
-                        minimize: false,
-                        sourceMap: true
-                      }
-                    },
-                    {
-                      loader: require.resolve('postcss-loader'),
-                      options: {
-                        // Necessary for external CSS imports to work
-                        // https://github.com/facebookincubator/create-react-app/issues/2677
-                        ident: 'postcss',
-                        plugins: () => [
-                          postCssFlexbugsFixes,
-                          autoprefixer({
-                            browsers: [
-                              '>1%',
-                              'last 4 versions',
-                              'Firefox ESR',
-                              'not ie < 9' // React doesn't support IE8 anyway
-                            ],
-                            flexbox: 'no-2009'
-                          })
-                        ]
-                      }
-                    }
-                  ]
-                },
-                {}
-              )
-            )
+            use: [
+              {
+                loader: MiniCssExtractPlugin.loader
+              },
+              {
+                loader: require.resolve('css-loader'),
+                options: {
+                  importLoaders: 1,
+                  minimize: false,
+                  sourceMap: true
+                }
+              },
+              {
+                // Options for PostCSS as we reference these options twice
+                // Adds vendor prefixing based on your specified browser support in
+                // package.json
+                loader: require.resolve('postcss-loader'),
+                options: {
+                  // Necessary for external CSS imports to work
+                  // https://github.com/facebook/create-react-app/issues/2677
+                  ident: 'postcss',
+                  plugins: () => [
+                    require('postcss-flexbugs-fixes'),
+                    autoprefixer({
+                      flexbox: 'no-2009'
+                    })
+                  ],
+                  sourceMap: true
+                }
+              }
+            ]
           },
           // "file" loader makes sure assets end up in the `build` folder.
           // When you `import` an asset, you get its filename.
@@ -94,7 +75,7 @@ module.exports = {
             // it's runtime that would otherwise be processed through "file" loader.
             // Also exclude `html` and `json` extensions so they get processed
             // by webpacks internal loaders.
-            exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/],
+            exclude: [/\.(js|jsx|mjs|ts|tsx)$/, /\.html$/, /\.json$/],
             options: {
               name: 'media/[name].[ext]'
             }
@@ -104,8 +85,9 @@ module.exports = {
     ]
   },
   plugins: [
-    new ExtractTextPlugin({
-      filename: 'index.css'
+    new MiniCssExtractPlugin({
+      chunkFilename: '[id].css',
+      filename: 'AccessibleGooglePlacesAutocomplete.css'
     })
   ],
   node: {
@@ -115,7 +97,5 @@ module.exports = {
     tls: 'empty',
     child_process: 'empty'
   },
-  externals: [
-    nodeExternals({ modulesDir: path.resolve(__dirname, 'node_modules') })
-  ]
+  externals: [nodeExternals()]
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import AccessibleGooglePlacesAutocomplete from 'accessible-google-places-autocomplete';
+import { AccessibleGooglePlacesAutocomplete } from 'accessible-google-places-autocomplete';
 
 function App() {
   return (

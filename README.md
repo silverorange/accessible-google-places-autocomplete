@@ -28,7 +28,7 @@ In your React application, you can import and use the component in your JSX:
 ```js
 import React from 'react';
 import ReactDom from 'react';
-import AccessibleGooglePlacesAutocomplete from 'accessible-google-places-autocomplete';
+import { AccessibleGooglePlacesAutocomplete } from 'accessible-google-places-autocomplete';
 
 ReactDOM.render(
   <div>
