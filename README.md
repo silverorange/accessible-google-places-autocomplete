@@ -28,12 +28,12 @@ In your React application, you can import and use the component in your JSX:
 ```js
 import React from 'react';
 import ReactDom from 'react';
-import AccessableGooglePlacesAutocomplete from 'accessible-google-places-autocomplete';
+import AccessibleGooglePlacesAutocomplete from 'accessible-google-places-autocomplete';
 
 ReactDOM.render(
   <div>
     <label for="address_input">Enter your address</label>
-    <AccessableGooglePlacesAutocomplete
+    <AccessibleGooglePlacesAutocomplete
       id="address_input"
       googleMapsApiKey="api-key-goes-here"
     />
