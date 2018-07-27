@@ -63,8 +63,8 @@ interface IAccessibleGooglePlacesAutocompleteOptions {
 }
 
 interface IAccessibleGooglePlacesAutocompleteProps {
-  googleMapsApiKey: string;
-  googleMapsOptions?: IAccessibleGooglePlacesAutocompleteOptions;
+  googlePlacesApiKey: string;
+  googlePlacesOptions?: IAccessibleGooglePlacesAutocompleteOptions;
   id: string;
   minLength?: number;
   t?: any;
@@ -155,10 +155,10 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   }
 
   public getSuggestions(query: string, populateResults: any): void {
-    const { googleMapsOptions = {} } = this.props;
+    const { googlePlacesOptions = {} } = this.props;
 
     const request: google.maps.places.AutocompletionRequest = {
-      ...googleMapsOptions,
+      ...googlePlacesOptions,
       input: query
     };
 
@@ -179,10 +179,10 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   }
 
   public render() {
-    const { googleMapsApiKey, id, minLength = 4 } = this.props;
+    const { googlePlacesApiKey, id, minLength = 4 } = this.props;
     const { apiLoaded } = this.state;
-    const encodedKey = encodeURIComponent(googleMapsApiKey);
-    const googleMapsApi = `https://maps.googleapis.com/maps/api/js?key=${encodedKey}&libraries=places`;
+    const encodedKey = encodeURIComponent(googlePlacesApiKey);
+    const googlePlacesApi = `https://maps.googleapis.com/maps/api/js?key=${encodedKey}&libraries=places`;
 
     if (apiLoaded) {
       return (
@@ -201,6 +201,6 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       );
     }
 
-    return <Script url={googleMapsApi} onLoad={this.onApiLoad} />;
+    return <Script url={googlePlacesApi} onLoad={this.onApiLoad} />;
   }
 }

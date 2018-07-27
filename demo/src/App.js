@@ -2,7 +2,7 @@ import React from 'react';
 import { AccessibleGooglePlacesAutocomplete } from 'accessible-google-places-autocomplete';
 
 function App() {
-  const googleMapsOptions = {
+  const googlePlacesOptions = {
     componentRestrictions: { country: 'CA' },
     types: ['geocode']
   };
@@ -19,8 +19,8 @@ function App() {
         </div>
         <AccessibleGooglePlacesAutocomplete
           id="address_input"
-          googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
-          googleMapsOptions={googleMapsOptions}
+          googlePlacesApiKey={process.env.REACT_APP_GOOGLE_PLACES_API_KEY}
+          googlePlacesOptions={googlePlacesOptions}
         />
       </form>
     </div>

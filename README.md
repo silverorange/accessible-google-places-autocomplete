@@ -35,7 +35,7 @@ ReactDOM.render(
     <label for="address_input">Enter your address</label>
     <AccessibleGooglePlacesAutocomplete
       id="address_input"
-      googleMapsApiKey="api-key-goes-here"
+      googlePlacesApiKey="api-key-goes-here"
     />
   </div>,
   document.querySelector('#container')
@@ -71,15 +71,15 @@ Type: `string`
 
 The `id` used for the embedded input.
 
-#### `googleMapsApiKey`
+#### `googlePlacesApiKey`
 
 Type: `string`
 
-Google Maps API Key needed to request addresses. You'll need to [request one](https://developers.google.com/places/web-service/get-api-key) and make sure it has the correct permissions to request addresses from Places API.
+Google Places API Key needed to request addresses. You'll need to [request one](https://developers.google.com/places/web-service/get-api-key) and make sure it has the correct permissions to request addresses from Places API.
 
 ### Other options
 
-#### `googleMapsOptions`
+#### `googlePlacesOptions`
 
 Type: `object` (default: `{}`)
 
