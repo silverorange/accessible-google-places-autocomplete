@@ -1,7 +1,7 @@
 import * as React from 'react';
 interface IAccessibleGooglePlacesAutocompleteProps {
-    countryCode: string;
     googleMapsApiKey: string;
+    googleMapsOptions: any;
     id: string;
     minLength?: number;
     t?: any;

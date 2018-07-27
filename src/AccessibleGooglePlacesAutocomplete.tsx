@@ -54,8 +54,8 @@ function translate(message: string, context: any): string {
 }
 
 interface IAccessibleGooglePlacesAutocompleteProps {
-  countryCode: string;
   googleMapsApiKey: string;
+  googleMapsOptions: any;
   id: string;
   minLength?: number;
   t?: any;
@@ -171,13 +171,10 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   }
 
   public getSuggestions(query: string, populateResults: any): void {
-    const { countryCode } = this.props;
+    const { googleMapsOptions } = this.props;
 
-    const request = {
-      componentRestrictions: { country: countryCode },
-      input: query,
-      types: ['geocode']
-    };
+    const request = googleMapsOptions;
+    request.input = query;
 
     function getPlaces(predictions: IAutocompletePrediction[], status: string) {
       if (status !== google.maps.places.PlacesServiceStatus.OK) {

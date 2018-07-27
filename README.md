@@ -61,6 +61,30 @@ the component.
 3.  `yarn install`
 4.  `yarn start`
 
+## API documentation
+
+### Required options
+
+#### `id`
+
+Type: `string`
+
+The `id` used for the embedded input.
+
+#### `googleMapsApiKey`
+
+Type: `string`
+
+Google Maps API Key needed to request addresses. You'll need to [request one](https://developers.google.com/places/web-service/get-api-key) and make sure it has the correct permissions to request addresses from Places API.
+
+### Other options
+
+#### `googleMapsOptions`
+
+Type: `object` (default: `{}`)
+
+Any of the many options available for the [Google Places API](https://developers.google.com/maps/documentation/javascript/reference/3/places-widget#AutocompletionRequest). See the demo for some examples.
+
 ## License
 
 [MIT](LICENSE)
