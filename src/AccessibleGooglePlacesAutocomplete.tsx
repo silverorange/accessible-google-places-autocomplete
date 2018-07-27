@@ -53,9 +53,18 @@ function translate(message: string, context: any): string {
   );
 }
 
+interface IAccessibleGooglePlacesAutocompleteOptions {
+  bounds?: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral;
+  componentRestrictions?: google.maps.places.ComponentRestrictions;
+  location?: google.maps.LatLng;
+  offset?: number;
+  radius?: number;
+  types?: string[];
+}
+
 interface IAccessibleGooglePlacesAutocompleteProps {
   googleMapsApiKey: string;
-  googleMapsOptions: any;
+  googleMapsOptions?: IAccessibleGooglePlacesAutocompleteOptions;
   id: string;
   minLength?: number;
   t?: any;
@@ -63,31 +72,6 @@ interface IAccessibleGooglePlacesAutocompleteProps {
 
 interface IAccessibleGooglePlacesAutocompleteState {
   apiLoaded: boolean;
-}
-
-interface IPredictionSubstring {
-  length: number;
-  offset: number;
-}
-
-interface IPredictionTerm {
-  offset: number;
-  value: string;
-}
-
-interface IStructuredFormatting {
-  main_text: string;
-  main_text_matched_substrings: IPredictionSubstring[];
-  secondary_text: string;
-}
-
-interface IAutocompletePrediction {
-  description: string;
-  matched_substrings: IPredictionSubstring[];
-  place_id: string;
-  structured_formatting: IStructuredFormatting;
-  terms: IPredictionTerm[];
-  types: string[];
 }
 
 export class AccessibleGooglePlacesAutocomplete extends React.Component<
@@ -171,12 +155,17 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   }
 
   public getSuggestions(query: string, populateResults: any): void {
-    const { googleMapsOptions } = this.props;
+    const { googleMapsOptions = {} } = this.props;
 
-    const request = googleMapsOptions;
-    request.input = query;
+    const request: google.maps.places.AutocompletionRequest = {
+      ...googleMapsOptions,
+      input: query
+    };
 
-    function getPlaces(predictions: IAutocompletePrediction[], status: string) {
+    function getPlaces(
+      predictions: google.maps.places.AutocompletePrediction[],
+      status: string
+    ) {
       if (status !== google.maps.places.PlacesServiceStatus.OK) {
         populateResults([]);
         return;
