@@ -1,7 +1,16 @@
+/// <reference types="googlemaps" />
 import * as React from 'react';
+interface IAccessibleGooglePlacesAutocompleteOptions {
+    bounds?: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral;
+    componentRestrictions?: google.maps.places.ComponentRestrictions;
+    location?: google.maps.LatLng;
+    offset?: number;
+    radius?: number;
+    types?: string[];
+}
 interface IAccessibleGooglePlacesAutocompleteProps {
     googleMapsApiKey: string;
-    googleMapsOptions: any;
+    googleMapsOptions?: IAccessibleGooglePlacesAutocompleteOptions;
     id: string;
     minLength?: number;
     t?: any;
