@@ -35,7 +35,7 @@ ReactDOM.render(
     <label for="address_input">Enter your address</label>
     <AccessibleGooglePlacesAutocomplete
       id="address_input"
-      googleMapsApiKey="api-key-goes-here"
+      googlePlacesApiKey="api-key-goes-here"
     />
   </div>,
   document.querySelector('#container')
@@ -60,6 +60,30 @@ the component.
 2.  copy `.env.example` to `.env` and add your Google Places key.
 3.  `yarn install`
 4.  `yarn start`
+
+## API documentation
+
+### Required options
+
+#### `id`
+
+Type: `string`
+
+The `id` used for the embedded input.
+
+#### `googlePlacesApiKey`
+
+Type: `string`
+
+Google Places API Key needed to request addresses. You'll need to [request one](https://developers.google.com/places/web-service/get-api-key) and make sure it has the correct permissions to request addresses from Places API.
+
+### Other options
+
+#### `googlePlacesOptions`
+
+Type: `object` (default: `{}`)
+
+Any of the many options available for the [Google Places API](https://developers.google.com/maps/documentation/javascript/reference/3/places-widget#AutocompletionRequest). See the demo for some examples.
 
 ## License
 
