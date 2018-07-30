@@ -6,10 +6,9 @@ pipeline {
     }
 
     stages {
-        stage('build') {
+        stage('install dependencies') {
             steps {
                 sh 'yarn install --mutex network'
-                sh 'yarn build'
             }
         }
 
@@ -49,6 +48,29 @@ pipeline {
                                 channel: env.SLACK_CHANNEL,
                                 message: "${env.JOB_NAME.split('/')[1]} (${env.BRANCH_NAME}) ${env.STAGE_NAME.toLowerCase()} failed. (<${env.RUN_DISPLAY_URL}|View in Jenkins>)",
                                 color: 'danger'
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('build') {
+            steps {
+                sh 'yarn build'
+
+                // Make sure the build output is unchanged from the current
+                // commit.
+                sh '[ "$(git status -s lib/ | wc -l)" -eq "0" ]'
+            }
+            post {
+                failure {
+                    script {
+                        if (env.BRANCH_NAME == 'master') {
+                            slackSend(
+                                channel: env.SLACK_CHANNEL,
+                                message: "${env.JOB_NAME.split('/')[1]} (${env.BRANCH_NAME}) ${env.STAGE_NAME.toLowerCase()} failed. (<${env.RUN_DISPLAY_URL}|View in Jenkins>)",
+                                color: 'warning'
                             )
                         }
                     }
