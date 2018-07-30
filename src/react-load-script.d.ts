@@ -1,7 +1,7 @@
 declare module 'react-load-script' {
   import * as React from 'react';
 
-  export interface ScriptProps {
+  interface ScriptProps {
     onCreate?: () => void;
     onError?: () => void;
     onLoad?: () => void;
@@ -9,5 +9,15 @@ declare module 'react-load-script' {
     attributes?: any;
   }
 
-  export default class Script extends React.Component<ScriptProps, any> {}
+  class Script extends React.Component<ScriptProps, any> {}
+
+  // react-load-script exports the component as both a default
+  // (exports.default = Foo) and as an immediate class (module.exports = Foo).
+  // This hack to allows importing in Typescript as a namespace and using as a
+  // class.
+  namespace Script {
+
+  }
+
+  export = Script;
 }

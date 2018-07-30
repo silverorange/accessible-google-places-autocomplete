@@ -55,7 +55,7 @@ module.exports = {
                   // https://github.com/facebook/create-react-app/issues/2677
                   ident: 'postcss',
                   plugins: () => [
-                    require('postcss-flexbugs-fixes'),
+                    postCssFlexbugsFixes,
                     autoprefixer({
                       flexbox: 'no-2009'
                     })
