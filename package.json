@@ -19,12 +19,12 @@
     "react-load-script": "^0.0.6"
   },
   "peerDependencies": {
-    "@types/react": "^16.4.7",
-    "@types/react-dom": "^16.0.6",
     "react": "^15.4.2||^16.4.1",
     "react-dom": "^15.4.2||^16.4.1"
   },
   "devDependencies": {
+    "@types/react": "^16.4.7",
+    "@types/react-dom": "^16.0.6",
     "autoprefixer": "^8.5.0",
     "css-loader": "0.28.7",
     "file-loader": "1.1.5",
