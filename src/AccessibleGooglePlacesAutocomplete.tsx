@@ -1,7 +1,7 @@
 declare var google: any;
 
 import * as React from 'react';
-import Script from 'react-load-script';
+import * as Script from 'react-load-script';
 import Autocomplete from 'accessible-autocomplete/react';
 import * as get from 'get-value';
 

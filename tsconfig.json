@@ -4,7 +4,7 @@
     "declarationDir": "types",
     "baseUrl": ".",
     "outDir": "dist",
-    "module": "esnext",
+    "module": "commonjs",
     "target": "es5",
     "lib": ["es6", "dom"],
     "sourceMap": true,
@@ -19,5 +19,12 @@
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true
   },
-  "exclude": ["node_modules", "dist", "demo", "webpack.config.js"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "demo",
+    "webpack.config.js",
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ]
 }
