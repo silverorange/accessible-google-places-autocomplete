@@ -114,8 +114,6 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
             }
           }
         );
-
-        // https://maps.googleapis.com/maps/api/place/details/json?placeid=ChIJN1t_tDeuEmsRUsoyG83frY4&fields=name,rating,formatted_phone_number&key=YOUR_API_KEY
       }
     });
   };
