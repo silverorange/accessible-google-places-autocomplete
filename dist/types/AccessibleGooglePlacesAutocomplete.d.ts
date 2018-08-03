@@ -19,9 +19,11 @@ interface IAccessibleGooglePlacesAutocompleteState {
     apiLoaded: boolean;
 }
 export declare class AccessibleGooglePlacesAutocomplete extends React.Component<IAccessibleGooglePlacesAutocompleteProps, IAccessibleGooglePlacesAutocompleteState> {
-    private service;
+    private autocompleteService;
+    private predictions;
     private currentStatusMessage;
     constructor(props: IAccessibleGooglePlacesAutocompleteProps);
+    onConfirm: (value: string) => void;
     onApiLoad(): void;
     getNoResultsMessage(): string;
     getStatusSelectedOptionMessage(selectedOption: string): string;
