@@ -113,7 +113,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
           placeResult: google.maps.places.PlaceResult,
           requestStatus: string
         ) => {
-          if (requestStatus === 'OK') {
+          if (requestStatus === google.maps.places.PlacesServiceStatus.OK) {
             this.props.onConfirm(placeResult);
           }
         }
