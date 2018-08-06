@@ -2,6 +2,10 @@ import React from 'react';
 import { AccessibleGooglePlacesAutocomplete } from 'accessible-google-places-autocomplete';
 
 function App() {
+  function onConfirm(place) {
+    console.log(place);
+  }
+
   const googlePlacesOptions = {
     componentRestrictions: { country: 'CA' },
     types: ['geocode']
@@ -21,6 +25,7 @@ function App() {
           id="address_input"
           googlePlacesApiKey={process.env.REACT_APP_GOOGLE_PLACES_API_KEY}
           googlePlacesOptions={googlePlacesOptions}
+          onConfirm={onConfirm}
         />
       </form>
     </div>
