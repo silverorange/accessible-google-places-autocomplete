@@ -89,7 +89,7 @@ Any of the many options available for the [Google Places API](https://developers
 
 Type: `function`
 
-Callback function that returns a [Google Place Result](https://developers.google.com/maps/documentation/javascript/reference/3.exp/places-service#PlaceResult) object when an address is selected. Consider using a package like the [parseGooglePlace](https://www.npmjs.com/package/parse-google-place) to read the value.
+Callback function that returns a [Google Place Result](https://developers.google.com/maps/documentation/javascript/reference/3.exp/places-service#PlaceResult) object when an address is selected. Consider using a package like [parseGooglePlace](https://www.npmjs.com/package/parse-google-place) to read the value.
 
 ## License
 
