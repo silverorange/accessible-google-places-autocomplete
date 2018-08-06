@@ -2,6 +2,8 @@ import React from 'react';
 import { AccessibleGooglePlacesAutocomplete } from 'accessible-google-places-autocomplete';
 
 function App() {
+  document.title = 'Accessible Google Places Address Autocomplete';
+
   function onConfirm(place) {
     console.log(place);
   }
