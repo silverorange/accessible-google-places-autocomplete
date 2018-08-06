@@ -63,7 +63,7 @@ interface IAccessibleGooglePlacesAutocompleteProps {
   googlePlacesOptions?: IAccessibleGooglePlacesAutocompleteOptions;
   id: string;
   minLength?: number;
-  onConfirm: (address: google.maps.places.PlaceResult) => void;
+  onConfirm: (placeResult: google.maps.places.PlaceResult) => void;
   t?: any;
 }
 
@@ -109,9 +109,12 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
 
         placesService.getDetails(
           { placeId: element.place_id },
-          (placeInfo: any, requestStatus: string) => {
+          (
+            placeResult: google.maps.places.PlaceResult,
+            requestStatus: string
+          ) => {
             if (requestStatus === 'OK') {
-              this.props.onConfirm(placeInfo);
+              this.props.onConfirm(placeResult);
             }
           }
         );

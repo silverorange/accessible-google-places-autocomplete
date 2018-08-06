@@ -13,7 +13,7 @@ interface IAccessibleGooglePlacesAutocompleteProps {
     googlePlacesOptions?: IAccessibleGooglePlacesAutocompleteOptions;
     id: string;
     minLength?: number;
-    onConfirm: (address: google.maps.places.PlaceResult) => void;
+    onConfirm: (placeResult: google.maps.places.PlaceResult) => void;
     t?: any;
 }
 interface IAccessibleGooglePlacesAutocompleteState {
