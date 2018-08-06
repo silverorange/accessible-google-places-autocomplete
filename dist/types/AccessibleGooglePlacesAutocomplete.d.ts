@@ -13,15 +13,19 @@ interface IAccessibleGooglePlacesAutocompleteProps {
     googlePlacesOptions?: IAccessibleGooglePlacesAutocompleteOptions;
     id: string;
     minLength?: number;
+    onConfirm: (placeResult: google.maps.places.PlaceResult) => void;
     t?: any;
 }
 interface IAccessibleGooglePlacesAutocompleteState {
     apiLoaded: boolean;
 }
 export declare class AccessibleGooglePlacesAutocomplete extends React.Component<IAccessibleGooglePlacesAutocompleteProps, IAccessibleGooglePlacesAutocompleteState> {
-    private service;
+    private autocompleteService;
+    private placesService;
+    private predictions;
     private currentStatusMessage;
     constructor(props: IAccessibleGooglePlacesAutocompleteProps);
+    onAutoCompleteSelect: (value: string) => void;
     onApiLoad(): void;
     getNoResultsMessage(): string;
     getStatusSelectedOptionMessage(selectedOption: string): string;

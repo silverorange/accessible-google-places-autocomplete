@@ -5,10 +5,6 @@ import * as Script from 'react-load-script';
 import Autocomplete from 'accessible-autocomplete/react';
 import * as get from 'get-value';
 
-function onConfirm() {
-  // console.log('confirmed address');
-}
-
 function translate(message: string, context: any): string {
   const messages = {
     addressAutoComplete: {
@@ -67,6 +63,7 @@ interface IAccessibleGooglePlacesAutocompleteProps {
   googlePlacesOptions?: IAccessibleGooglePlacesAutocompleteOptions;
   id: string;
   minLength?: number;
+  onConfirm: (placeResult: google.maps.places.PlaceResult) => void;
   t?: any;
 }
 
@@ -78,7 +75,9 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   IAccessibleGooglePlacesAutocompleteProps,
   IAccessibleGooglePlacesAutocompleteState
 > {
-  private service: any;
+  private autocompleteService: any;
+  private placesService: any;
+  private predictions: google.maps.places.AutocompletePrediction[];
   private currentStatusMessage: string;
 
   constructor(props: IAccessibleGooglePlacesAutocompleteProps) {
@@ -88,7 +87,8 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       apiLoaded: false
     };
 
-    this.service = null;
+    this.autocompleteService = null;
+    this.predictions = [];
     this.currentStatusMessage = '';
 
     this.onApiLoad = this.onApiLoad.bind(this);
@@ -101,9 +101,32 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     this.getStatusNoResultsMessage = this.getStatusNoResultsMessage.bind(this);
   }
 
+  public onAutoCompleteSelect = (value: string) => {
+    const selectedPrediction = this.predictions.find(
+      prediction => prediction.description === value
+    );
+
+    if (selectedPrediction !== undefined) {
+      this.placesService.getDetails(
+        { placeId: selectedPrediction.place_id },
+        (
+          placeResult: google.maps.places.PlaceResult,
+          requestStatus: string
+        ) => {
+          if (requestStatus === google.maps.places.PlacesServiceStatus.OK) {
+            this.props.onConfirm(placeResult);
+          }
+        }
+      );
+    }
+  };
+
   public onApiLoad() {
     this.setState(() => ({ apiLoaded: true }));
-    this.service = new google.maps.places.AutocompleteService();
+    this.autocompleteService = new google.maps.places.AutocompleteService();
+    this.placesService = new google.maps.places.PlacesService(
+      document.createElement('div')
+    );
   }
 
   public getNoResultsMessage(): string {
@@ -162,20 +185,21 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       input: query
     };
 
-    function getPlaces(
+    const getPlaces = (
       predictions: google.maps.places.AutocompletePrediction[],
       status: string
-    ) {
+    ) => {
       if (status !== google.maps.places.PlacesServiceStatus.OK) {
         populateResults([]);
         return;
       }
 
+      this.predictions = predictions;
       const results = predictions.map(prediction => prediction.description);
       populateResults(results);
-    }
+    };
 
-    this.service.getPlacePredictions(request, getPlaces);
+    this.autocompleteService.getPlacePredictions(request, getPlaces);
   }
 
   public render() {
@@ -196,7 +220,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
           tStatusSelectedOption={this.getStatusSelectedOptionMessage}
           tStatusNoResults={this.getStatusNoResultsMessage}
           tStatusResults={this.getStatusResultsMessage}
-          onConfirm={onConfirm}
+          onConfirm={this.onAutoCompleteSelect}
         />
       );
     }

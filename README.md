@@ -85,6 +85,12 @@ Type: `object` (default: `{}`)
 
 Any of the many options available for the [Google Places API](https://developers.google.com/maps/documentation/javascript/reference/3/places-widget#AutocompletionRequest). See the demo for some examples.
 
+#### `onConfirm(placeResult)`
+
+Type: `function`
+
+Callback function that returns a [Google Place Result](https://developers.google.com/maps/documentation/javascript/reference/3.exp/places-service#PlaceResult) object when an address is selected. Consider using a package like [parseGooglePlace](https://www.npmjs.com/package/parse-google-place) to read the value.
+
 ## License
 
 [MIT](LICENSE)
