@@ -101,25 +101,27 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   }
 
   public onAutoCompleteSelect = (value: string) => {
-    this.predictions.forEach(prediction => {
-      if (prediction.description === value) {
-        const placesService = new google.maps.places.PlacesService(
-          document.createElement('div')
-        );
+    const selectedPrediction = this.predictions.find(
+      prediction => prediction.description === value
+    );
 
-        placesService.getDetails(
-          { placeId: prediction.place_id },
-          (
-            placeResult: google.maps.places.PlaceResult,
-            requestStatus: string
-          ) => {
-            if (requestStatus === 'OK') {
-              this.props.onConfirm(placeResult);
-            }
+    if (selectedPrediction !== undefined) {
+      const placesService = new google.maps.places.PlacesService(
+        document.createElement('div')
+      );
+
+      placesService.getDetails(
+        { placeId: selectedPrediction.place_id },
+        (
+          placeResult: google.maps.places.PlaceResult,
+          requestStatus: string
+        ) => {
+          if (requestStatus === 'OK') {
+            this.props.onConfirm(placeResult);
           }
-        );
-      }
-    });
+        }
+      );
+    }
   };
 
   public onApiLoad() {
