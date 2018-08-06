@@ -76,6 +76,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   IAccessibleGooglePlacesAutocompleteState
 > {
   private autocompleteService: any;
+  private placesService: any;
   private predictions: google.maps.places.AutocompletePrediction[];
   private currentStatusMessage: string;
 
@@ -106,11 +107,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     );
 
     if (selectedPrediction !== undefined) {
-      const placesService = new google.maps.places.PlacesService(
-        document.createElement('div')
-      );
-
-      placesService.getDetails(
+      this.placesService.getDetails(
         { placeId: selectedPrediction.place_id },
         (
           placeResult: google.maps.places.PlaceResult,
@@ -127,6 +124,9 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   public onApiLoad() {
     this.setState(() => ({ apiLoaded: true }));
     this.autocompleteService = new google.maps.places.AutocompleteService();
+    this.placesService = new google.maps.places.PlacesService(
+      document.createElement('div')
+    );
   }
 
   public getNoResultsMessage(): string {

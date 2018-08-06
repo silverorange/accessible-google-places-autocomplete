@@ -21,6 +21,7 @@ interface IAccessibleGooglePlacesAutocompleteState {
 }
 export declare class AccessibleGooglePlacesAutocomplete extends React.Component<IAccessibleGooglePlacesAutocompleteProps, IAccessibleGooglePlacesAutocompleteState> {
     private autocompleteService;
+    private placesService;
     private predictions;
     private currentStatusMessage;
     constructor(props: IAccessibleGooglePlacesAutocompleteProps);
