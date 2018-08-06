@@ -101,14 +101,14 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   }
 
   public onAutoCompleteSelect = (value: string) => {
-    this.predictions.forEach(element => {
-      if (element.description === value) {
+    this.predictions.forEach(prediction => {
+      if (prediction.description === value) {
         const placesService = new google.maps.places.PlacesService(
           document.createElement('div')
         );
 
         placesService.getDetails(
-          { placeId: element.place_id },
+          { placeId: prediction.place_id },
           (
             placeResult: google.maps.places.PlaceResult,
             requestStatus: string
