@@ -13,19 +13,22 @@ interface IAccessibleGooglePlacesAutocompleteProps {
     googlePlacesOptions?: IAccessibleGooglePlacesAutocompleteOptions;
     id: string;
     minLength?: number;
-    onConfirm: (placeResult: google.maps.places.PlaceResult) => void;
+    onConfirm?: (placeResult: google.maps.places.PlaceResult) => void;
+    onError?: (error: any) => void;
     t?: any;
+    useMoreAccuratePostalCode?: boolean;
 }
 interface IAccessibleGooglePlacesAutocompleteState {
     apiLoaded: boolean;
 }
 export declare class AccessibleGooglePlacesAutocomplete extends React.Component<IAccessibleGooglePlacesAutocompleteProps, IAccessibleGooglePlacesAutocompleteState> {
-    private autocompleteService;
-    private placesService;
+    private geocoderService?;
+    private autocompleteService?;
+    private placesService?;
     private predictions;
     private currentStatusMessage;
     constructor(props: IAccessibleGooglePlacesAutocompleteProps);
-    onAutoCompleteSelect: (value: string) => void;
+    onAutoCompleteSelect: (value: string) => Promise<void>;
     onApiLoad(): void;
     getNoResultsMessage(): string;
     getStatusSelectedOptionMessage(selectedOption: string): string;
@@ -33,5 +36,7 @@ export declare class AccessibleGooglePlacesAutocomplete extends React.Component<
     getStatusResultsMessage(length: number, contentSelectedOption: string): string;
     getSuggestions(query: string, populateResults: any): void;
     render(): JSX.Element;
+    private getPlaceDetails;
+    private getReverseGeocodeData;
 }
 export {};
