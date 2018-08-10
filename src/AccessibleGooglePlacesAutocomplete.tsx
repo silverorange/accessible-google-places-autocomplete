@@ -307,7 +307,24 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
           geocodeStatus: google.maps.GeocoderStatus
         ) => {
           if (geocodeStatus === google.maps.GeocoderStatus.OK) {
-            resolve(geocodeResult[0]); // TODO get best match
+            // Find first reverse geocode address that matches the street
+            // number, name, and city.
+            const bestResult = geocodeResult.find(result => {
+              // Match all the required fields for the reverse geocode address
+              // and reduce field matches to a single boolean value.
+              return ['street_number', 'route', 'locality']
+                .map(fieldName => {
+                  return (
+                    place.address_components[fieldName] ===
+                    result.address_components[fieldName]
+                  );
+                })
+                .reduce((isAddressMatch, isFieldMatch) => {
+                  return isAddressMatch && isFieldMatch;
+                }, true);
+            });
+
+            resolve(bestResult === undefined ? geocodeResult[0] : bestResult);
           } else {
             reject(geocodeStatus);
           }
