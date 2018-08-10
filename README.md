@@ -63,7 +63,7 @@ the component.
 
 ## API documentation
 
-### Required options
+### Required props
 
 #### `id`
 
@@ -79,7 +79,7 @@ Google Places API Key needed to request addresses. You'll need to [request one]
 https://developers.google.com/places/web-service/get-api-key) and make sure it
 has the correct permissions to request addresses from Places API.
 
-### Other options
+### Other props
 
 #### `googlePlacesOptions`
 
