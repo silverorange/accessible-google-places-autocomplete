@@ -118,16 +118,16 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       try {
         const placeResult = await this.getPlaceDetails(selectedPrediction);
 
-        if (useMoreAccuratePostalCode) {
+        if (
+          this.hasPartialPostalCode(placeResult.address_components) &&
+          useMoreAccuratePostalCode
+        ) {
           const geocodeResult = await this.getReverseGeocodeData(placeResult);
 
           // Remove Google Places postal code that may be a partial code.
           placeResult.address_components = placeResult.address_components.filter(
             component => !component.types.includes('postal_code')
           );
-
-          console.log(placeResult.address_components); // tslint:disable-line
-          console.log(geocodeResult.address_components); // tslint:disable-line
 
           // Add reverse geocode postal code value.
           placeResult.address_components = placeResult.address_components.concat(
@@ -252,6 +252,16 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     }
 
     return <Script url={googlePlacesApi} onLoad={this.onApiLoad} />;
+  }
+
+  private hasPartialPostalCode(
+    addressComponents: google.maps.GeocoderAddressComponent[]
+  ): boolean {
+    return (
+      addressComponents.find(component =>
+        component.types.includes('postal_code_prefix')
+      ) !== undefined
+    );
   }
 
   private getPlaceDetails(

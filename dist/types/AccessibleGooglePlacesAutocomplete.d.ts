@@ -36,6 +36,7 @@ export declare class AccessibleGooglePlacesAutocomplete extends React.Component<
     getStatusResultsMessage(length: number, contentSelectedOption: string): string;
     getSuggestions(query: string, populateResults: any): void;
     render(): JSX.Element;
+    private hasPartialPostalCode;
     private getPlaceDetails;
     private getReverseGeocodeData;
 }
