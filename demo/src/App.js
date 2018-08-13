@@ -8,6 +8,10 @@ function App() {
     console.log(place);
   }
 
+  function onClear() {
+    console.log('selection was cleared');
+  }
+
   const googlePlacesOptions = {
     componentRestrictions: { country: 'CA' },
     types: ['geocode']
@@ -28,6 +32,7 @@ function App() {
           googlePlacesApiKey={process.env.REACT_APP_GOOGLE_PLACES_API_KEY}
           googlePlacesOptions={googlePlacesOptions}
           onConfirm={onConfirm}
+          onClear={onClear}
           useMoreAccuratePostalCode
         />
       </form>
