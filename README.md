@@ -97,6 +97,13 @@ object when an address is selected. Consider using a package like
 [parseGooglePlace](https://www.npmjs.com/package/parse-google-place) to read
 the value.
 
+#### `onClear()`
+
+Type: `function`
+
+Callback function called when a new search is performed or the search box is
+cleared after an address was previously confirmed.
+
 #### `useMoreAccuratePostalCode`
 
 Type: `boolean`

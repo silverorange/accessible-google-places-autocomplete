@@ -63,6 +63,7 @@ interface IAccessibleGooglePlacesAutocompleteProps {
   googlePlacesOptions?: IAccessibleGooglePlacesAutocompleteOptions;
   id: string;
   minLength?: number;
+  onClear?: () => void;
   onConfirm?: (placeResult: google.maps.places.PlaceResult) => void;
   onError?: (error: any) => void;
   t?: any;
@@ -82,6 +83,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   private placesService?: google.maps.places.PlacesService;
   private predictions: google.maps.places.AutocompletePrediction[];
   private currentStatusMessage: string;
+  private hasPlaceSelected: boolean;
 
   constructor(props: IAccessibleGooglePlacesAutocompleteProps) {
     super(props);
@@ -136,6 +138,8 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
             )
           );
         }
+
+        this.hasPlaceSelected = true;
 
         onConfirm(placeResult);
       } catch (e) {
@@ -202,7 +206,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   }
 
   public getSuggestions(query: string, populateResults: any): void {
-    const { googlePlacesOptions = {} } = this.props;
+    const { googlePlacesOptions = {}, onClear = () => null } = this.props;
 
     const request: google.maps.places.AutocompletionRequest = {
       ...googlePlacesOptions,
@@ -225,6 +229,11 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
 
     if (this.autocompleteService) {
       this.autocompleteService.getPlacePredictions(request, getPlaces);
+    }
+
+    if (this.hasPlaceSelected) {
+      this.hasPlaceSelected = false;
+      onClear();
     }
   }
 

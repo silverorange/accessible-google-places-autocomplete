@@ -32,7 +32,7 @@ accessible-autocomplete@^1.6.1:
     preact "^8.1.0"
 
 "accessible-google-places-autocomplete@file:..":
-  version "1.1.2"
+  version "1.2.0"
   dependencies:
     "@types/get-value" "^3.0.0"
     "@types/googlemaps" "^3.30.11"
