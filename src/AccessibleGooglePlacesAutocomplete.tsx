@@ -63,8 +63,10 @@ interface IAccessibleGooglePlacesAutocompleteProps {
   googlePlacesOptions?: IAccessibleGooglePlacesAutocompleteOptions;
   id: string;
   minLength?: number;
-  onConfirm: (placeResult: google.maps.places.PlaceResult) => void;
+  onConfirm?: (placeResult: google.maps.places.PlaceResult) => void;
+  onError?: (error: any) => void;
   t?: any;
+  useMoreAccuratePostalCode?: boolean;
 }
 
 interface IAccessibleGooglePlacesAutocompleteState {
@@ -75,8 +77,9 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   IAccessibleGooglePlacesAutocompleteProps,
   IAccessibleGooglePlacesAutocompleteState
 > {
-  private autocompleteService: any;
-  private placesService: any;
+  private geocoderService?: google.maps.Geocoder;
+  private autocompleteService?: google.maps.places.AutocompleteService;
+  private placesService?: google.maps.places.PlacesService;
   private predictions: google.maps.places.AutocompletePrediction[];
   private currentStatusMessage: string;
 
@@ -87,7 +90,6 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       apiLoaded: false
     };
 
-    this.autocompleteService = null;
     this.predictions = [];
     this.currentStatusMessage = '';
 
@@ -101,29 +103,51 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     this.getStatusNoResultsMessage = this.getStatusNoResultsMessage.bind(this);
   }
 
-  public onAutoCompleteSelect = (value: string) => {
+  public onAutoCompleteSelect = async (value: string) => {
+    const {
+      useMoreAccuratePostalCode = false,
+      onError = () => null,
+      onConfirm = () => null
+    } = this.props;
+
     const selectedPrediction = this.predictions.find(
       prediction => prediction.description === value
     );
 
     if (selectedPrediction !== undefined) {
-      this.placesService.getDetails(
-        { placeId: selectedPrediction.place_id },
-        (
-          placeResult: google.maps.places.PlaceResult,
-          requestStatus: string
-        ) => {
-          if (requestStatus === google.maps.places.PlacesServiceStatus.OK) {
-            this.props.onConfirm(placeResult);
-          }
+      try {
+        const placeResult = await this.getPlaceDetails(selectedPrediction);
+
+        if (
+          this.hasPartialPostalCode(placeResult.address_components) &&
+          useMoreAccuratePostalCode
+        ) {
+          const geocodeResult = await this.getReverseGeocodeData(placeResult);
+
+          // Remove Google Places postal code that may be a partial code.
+          placeResult.address_components = placeResult.address_components.filter(
+            component => !component.types.includes('postal_code')
+          );
+
+          // Add reverse geocode postal code value.
+          placeResult.address_components = placeResult.address_components.concat(
+            geocodeResult.address_components.filter(component =>
+              component.types.includes('postal_code')
+            )
+          );
         }
-      );
+
+        onConfirm(placeResult);
+      } catch (e) {
+        onError(e);
+      }
     }
   };
 
   public onApiLoad() {
     this.setState(() => ({ apiLoaded: true }));
     this.autocompleteService = new google.maps.places.AutocompleteService();
+    this.geocoderService = new google.maps.Geocoder();
     this.placesService = new google.maps.places.PlacesService(
       document.createElement('div')
     );
@@ -187,7 +211,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
 
     const getPlaces = (
       predictions: google.maps.places.AutocompletePrediction[],
-      status: string
+      status: google.maps.places.PlacesServiceStatus
     ) => {
       if (status !== google.maps.places.PlacesServiceStatus.OK) {
         populateResults([]);
@@ -199,7 +223,9 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       populateResults(results);
     };
 
-    this.autocompleteService.getPlacePredictions(request, getPlaces);
+    if (this.autocompleteService) {
+      this.autocompleteService.getPlacePredictions(request, getPlaces);
+    }
   }
 
   public render() {
@@ -226,5 +252,84 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     }
 
     return <Script url={googlePlacesApi} onLoad={this.onApiLoad} />;
+  }
+
+  private hasPartialPostalCode(
+    addressComponents: google.maps.GeocoderAddressComponent[]
+  ): boolean {
+    return (
+      addressComponents.find(component =>
+        component.types.includes('postal_code_prefix')
+      ) !== undefined
+    );
+  }
+
+  private getPlaceDetails(
+    prediction: google.maps.places.AutocompletePrediction
+  ): Promise<google.maps.places.PlaceResult> {
+    if (this.placesService === undefined) {
+      return Promise.reject('Google places service is not available.');
+    }
+
+    return new Promise((resolve, reject) => {
+      this.placesService!.getDetails(
+        {
+          placeId: prediction.place_id
+        },
+        (
+          placeResult: google.maps.places.PlaceResult,
+          requestStatus: google.maps.places.PlacesServiceStatus
+        ) => {
+          if (requestStatus === google.maps.places.PlacesServiceStatus.OK) {
+            resolve(placeResult);
+          } else {
+            reject(requestStatus);
+          }
+        }
+      );
+    });
+  }
+
+  private getReverseGeocodeData(
+    place: google.maps.places.PlaceResult
+  ): Promise<google.maps.GeocoderResult> {
+    if (this.geocoderService === undefined) {
+      return Promise.reject('Google geocoding service is not available.');
+    }
+
+    return new Promise((resolve, reject) => {
+      this.geocoderService!.geocode(
+        {
+          location: place.geometry.location
+        },
+        (
+          geocodeResult: google.maps.GeocoderResult[],
+          geocodeStatus: google.maps.GeocoderStatus
+        ) => {
+          if (geocodeStatus === google.maps.GeocoderStatus.OK) {
+            // Find first reverse geocode address that matches the street
+            // number, name, and city.
+            const bestResult = geocodeResult.find(result => {
+              // Match all the required fields for the reverse geocode address
+              // and reduce field matches to a single boolean value.
+              return ['street_number', 'route', 'locality']
+                .map(fieldName => {
+                  return (
+                    place.address_components[fieldName] ===
+                    result.address_components[fieldName]
+                  );
+                })
+                .reduce((isAddressMatch, isFieldMatch) => {
+                  return isAddressMatch && isFieldMatch;
+                }, true);
+            });
+
+            resolve(bestResult === undefined ? geocodeResult[0] : bestResult);
+          } else {
+            reject(geocodeStatus);
+          }
+        }
+      );
+    });
   }
 }

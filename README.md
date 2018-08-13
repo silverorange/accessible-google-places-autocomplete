@@ -63,7 +63,7 @@ the component.
 
 ## API documentation
 
-### Required options
+### Required props
 
 #### `id`
 
@@ -75,21 +75,37 @@ The `id` used for the embedded input.
 
 Type: `string`
 
-Google Places API Key needed to request addresses. You'll need to [request one](https://developers.google.com/places/web-service/get-api-key) and make sure it has the correct permissions to request addresses from Places API.
+Google Places API Key needed to request addresses. You'll need to [request one]
+https://developers.google.com/places/web-service/get-api-key) and make sure it
+has the correct permissions to request addresses from Places API.
 
-### Other options
+### Other props
 
 #### `googlePlacesOptions`
 
 Type: `object` (default: `{}`)
 
-Any of the many options available for the [Google Places API](https://developers.google.com/maps/documentation/javascript/reference/3/places-widget#AutocompletionRequest). See the demo for some examples.
+Any of the many options available for the [Google Places API](https://developers.google.com/maps/documentation/javascript/reference/3/places-widget#AutocompletionRequest).
+See the demo for some examples.
 
 #### `onConfirm(placeResult)`
 
 Type: `function`
 
-Callback function that returns a [Google Place Result](https://developers.google.com/maps/documentation/javascript/reference/3.exp/places-service#PlaceResult) object when an address is selected. Consider using a package like [parseGooglePlace](https://www.npmjs.com/package/parse-google-place) to read the value.
+Callback function that returns a [Google Place Result](https://developers.google.com/maps/documentation/javascript/reference/3.exp/places-service#PlaceResult)
+object when an address is selected. Consider using a package like
+[parseGooglePlace](https://www.npmjs.com/package/parse-google-place) to read
+the value.
+
+#### `useMoreAccuratePostalCode`
+
+Type: `boolean`
+
+Defaults to `false`. Sometimes the Google Places API details returns a partial
+postal code instead of a full postal code. In this case, the reverse geocode
+API can provide a more accurate postal code. Using this option can increase
+your billing cost because of the additional API call. Only use this option if
+full postal code matching is required.
 
 ## License
 
