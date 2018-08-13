@@ -28,6 +28,7 @@ export declare class AccessibleGooglePlacesAutocomplete extends React.Component<
     private geocoderService?;
     private autocompleteService?;
     private placesService?;
+    private placesSessionToken;
     private predictions;
     private currentStatusMessage;
     private hasPlaceSelected;
