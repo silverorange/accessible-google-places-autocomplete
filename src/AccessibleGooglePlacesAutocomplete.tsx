@@ -161,35 +161,19 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   }
 
   public getSuggestions(query: string, populateResults: any): void {
-    const { googlePlacesOptions = {}, onClear = () => null } = this.props;
-
-    const request: google.maps.places.AutocompletionRequest = {
-      ...googlePlacesOptions,
-      input: query
-    };
-
-    const getPlaces = (
-      predictions: google.maps.places.AutocompletePrediction[],
-      status: google.maps.places.PlacesServiceStatus
-    ) => {
-      if (status !== google.maps.places.PlacesServiceStatus.OK) {
-        populateResults([]);
-        return;
-      }
-
-      this.predictions = predictions;
-      const results = predictions.map(prediction => prediction.description);
-      populateResults(results);
-    };
-
-    if (this.autocompleteService) {
-      this.autocompleteService.getPlacePredictions(request, getPlaces);
-    }
+    const { onClear = () => null } = this.props;
 
     if (this.hasPlaceSelected) {
       this.hasPlaceSelected = false;
       onClear();
     }
+
+    Promise.all(
+      this.getAddressVariants(query).map(this.getSuggestedPlaces.bind(this))
+    ).then(suggestions => {
+      // TODO zip merge result arrays
+      populateResults(suggestions[0]);
+    });
   }
 
   public render() {
@@ -222,6 +206,40 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     }
 
     return <Script url={googlePlacesApi} onLoad={this.onApiLoad} />;
+  }
+
+  private getAddressVariants(query: string): string[] {
+    return [query];
+  }
+
+  private getSuggestedPlaces(query: string): Promise<string[]> {
+    const { googlePlacesOptions = {} } = this.props;
+
+    const request: google.maps.places.AutocompletionRequest = {
+      ...googlePlacesOptions,
+      input: query
+    };
+
+    return new Promise((resolve, reject) => {
+      const getPlaces = (
+        predictions: google.maps.places.AutocompletePrediction[],
+        status: google.maps.places.PlacesServiceStatus
+      ) => {
+        if (status !== google.maps.places.PlacesServiceStatus.OK) {
+          resolve([]);
+          return;
+        }
+
+        const results = predictions.map(prediction => prediction.description);
+        resolve(results);
+      };
+
+      if (this.autocompleteService) {
+        this.autocompleteService.getPlacePredictions(request, getPlaces);
+      } else {
+        reject('Google Places autocomplete service is not available.');
+      }
+    });
   }
 
   private hasPartialPostalCode(
