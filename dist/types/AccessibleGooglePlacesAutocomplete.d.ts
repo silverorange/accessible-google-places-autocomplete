@@ -9,6 +9,7 @@ interface IAccessibleGooglePlacesAutocompleteOptions {
     types?: string[];
 }
 interface IAccessibleGooglePlacesAutocompleteProps {
+    autoselect?: boolean;
     googlePlacesApiKey: string;
     googlePlacesOptions?: IAccessibleGooglePlacesAutocompleteOptions;
     id: string;
