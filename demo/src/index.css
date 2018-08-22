@@ -8,6 +8,10 @@ body {
   position: relative;
 }
 
+input[type='text'] {
+  background: #fff;
+}
+
 .autocomplete__hint,
 .autocomplete__input {
   -webkit-appearance: none;
@@ -144,4 +148,25 @@ body {
     font-size: 19px;
     line-height: 1.31579;
   }
+}
+
+.App {
+  display: flex;
+  flex-direction: row;
+  max-width: 1024px;
+  margin: 80px auto;
+  padding: 40px;
+  background: #eee;
+}
+
+form {
+  flex: 1 1 50%;
+  margin-right: 20px;
+}
+
+.address {
+  margin-left: 20px;
+  flex: 1 1 50%;
+  font-weight: bold;
+  font-size: 24px;
 }
