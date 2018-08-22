@@ -59,6 +59,7 @@ interface IAccessibleGooglePlacesAutocompleteOptions {
 }
 
 interface IAccessibleGooglePlacesAutocompleteProps {
+  autoselect?: boolean;
   googlePlacesApiKey: string;
   googlePlacesOptions?: IAccessibleGooglePlacesAutocompleteOptions;
   id: string;
@@ -238,7 +239,12 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   }
 
   public render() {
-    const { googlePlacesApiKey, id, minLength = 4 } = this.props;
+    const {
+      autoselect = false,
+      googlePlacesApiKey,
+      id,
+      minLength = 4
+    } = this.props;
     const { apiLoaded } = this.state;
     const encodedKey = encodeURIComponent(googlePlacesApiKey);
     const googlePlacesApi = `https://maps.googleapis.com/maps/api/js?key=${encodedKey}&libraries=places`;
@@ -246,6 +252,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     if (apiLoaded) {
       return (
         <Autocomplete
+          autoselect={autoselect}
           id={id}
           source={this.getSuggestions}
           minLength={minLength}
