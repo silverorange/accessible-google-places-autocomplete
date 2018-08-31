@@ -116,7 +116,7 @@ full postal code matching is required.
 
 #### `required`
 
-Type: `boolean` (default: true)
+Type: `boolean` (default: false)
 
 Sets the `required` attribute of the `<input>`.
 

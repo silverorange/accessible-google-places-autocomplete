@@ -245,7 +245,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       googlePlacesApiKey,
       id,
       minLength = 4,
-      required = true
+      required = false
     } = this.props;
     const { apiLoaded } = this.state;
     const encodedKey = encodeURIComponent(googlePlacesApiKey);
