@@ -114,6 +114,12 @@ API can provide a more accurate postal code. Using this option can increase
 your billing cost because of the additional API call. Only use this option if
 full postal code matching is required.
 
+#### `required`
+
+Type: `boolean` (default: true)
+
+Sets the `required` attribute of the `<input>`.
+
 ## License
 
 [MIT](LICENSE)
