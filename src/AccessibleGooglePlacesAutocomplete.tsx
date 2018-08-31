@@ -67,6 +67,7 @@ interface IAccessibleGooglePlacesAutocompleteProps {
   onClear?: () => void;
   onConfirm?: (placeResult: google.maps.places.PlaceResult) => void;
   onError?: (error: any) => void;
+  required?: boolean;
   t?: any;
   useMoreAccuratePostalCode?: boolean;
 }
@@ -243,7 +244,8 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       autoselect = false,
       googlePlacesApiKey,
       id,
-      minLength = 4
+      minLength = 4,
+      required = true
     } = this.props;
     const { apiLoaded } = this.state;
     const encodedKey = encodeURIComponent(googlePlacesApiKey);
@@ -256,7 +258,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
           id={id}
           source={this.getSuggestions}
           minLength={minLength}
-          required
+          required={required}
           displayMenu="overlay"
           tNoResults={this.getNoResultsMessage}
           tStatusSelectedOption={this.getStatusSelectedOptionMessage}
