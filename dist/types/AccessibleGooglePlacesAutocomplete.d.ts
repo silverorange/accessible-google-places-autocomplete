@@ -17,6 +17,7 @@ interface IAccessibleGooglePlacesAutocompleteProps {
     onClear?: () => void;
     onConfirm?: (placeResult: google.maps.places.PlaceResult) => void;
     onError?: (error: any) => void;
+    required: boolean;
     t?: any;
     useMoreAccuratePostalCode?: boolean;
 }
