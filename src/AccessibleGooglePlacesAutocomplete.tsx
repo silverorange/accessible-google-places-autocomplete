@@ -1,53 +1,7 @@
-declare var google: any;
-
 import * as React from 'react';
 import * as Script from 'react-load-script';
 import Autocomplete from 'accessible-autocomplete/react';
-import * as get from 'get-value';
-
-function translate(message: string, context: any): string {
-  const messages = {
-    addressAutoComplete: {
-      noResults: 'Address not found',
-      statusNoResults: 'No matching addresses',
-      statusResults:
-        '%{smart_count} matching address is available |||| %{smart_count} matching addresses are available',
-      statusSelectedOption: 'You’ve selected %{option}'
-    }
-  };
-
-  let translation = get(messages, message);
-
-  if (!context) {
-    return translation;
-  }
-
-  if (!translation) {
-    return message;
-  }
-
-  // Support English plurals. More complex requirements should use an external
-  // i18n library like Polyglot.
-  if (context.smart_count !== undefined) {
-    const pluralForms = translation.split('||||');
-    const pluralIndex = context.smart_count === 1 ? 0 : 1;
-    translation = pluralForms[pluralIndex].trim();
-  }
-
-  // Interpolate results.
-  return translation.replace(
-    /%\{(.*?)\}/g,
-    (match: string, contextKey: string): string => {
-      if (context[contextKey] === undefined) {
-        return match;
-      }
-      if (typeof context[contextKey] === 'string') {
-        return context[contextKey].replace(/\$/g, '$$');
-      }
-      return context[contextKey];
-    }
-  );
-}
+import { translate } from './translate';
 
 interface IAccessibleGooglePlacesAutocompleteOptions {
   bounds?: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral;
@@ -208,35 +162,36 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   }
 
   public getSuggestions(query: string, populateResults: any): void {
-    const { googlePlacesOptions = {}, onClear = () => null } = this.props;
-
-    const request: google.maps.places.AutocompletionRequest = {
-      ...googlePlacesOptions,
-      input: query
-    };
-
-    const getPlaces = (
-      predictions: google.maps.places.AutocompletePrediction[],
-      status: google.maps.places.PlacesServiceStatus
-    ) => {
-      if (status !== google.maps.places.PlacesServiceStatus.OK) {
-        populateResults([]);
-        return;
-      }
-
-      this.predictions = predictions;
-      const results = predictions.map(prediction => prediction.description);
-      populateResults(results);
-    };
-
-    if (this.autocompleteService) {
-      this.autocompleteService.getPlacePredictions(request, getPlaces);
-    }
+    const { onClear = () => null } = this.props;
 
     if (this.hasPlaceSelected) {
       this.hasPlaceSelected = false;
       onClear();
     }
+
+    Promise.all<google.maps.places.AutocompletePrediction[]>(
+      this.getAddressVariants(query).map(this.getSuggestedPlaces.bind(this))
+    ).then(suggestions => {
+      const results: google.maps.places.AutocompletePrediction[] = [];
+
+      const length = suggestions.reduce(
+        (max: number, values: google.maps.places.AutocompletePrediction[]) =>
+          values.length > max ? values.length : max,
+        0
+      );
+
+      for (let i = 0; i < length; i++) {
+        for (const values of suggestions) {
+          if (values.length > i) {
+            results.push(values[i]);
+          }
+        }
+      }
+
+      this.predictions = results;
+
+      populateResults(results.map(result => result.description));
+    });
   }
 
   public render() {
@@ -270,6 +225,42 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     }
 
     return <Script url={googlePlacesApi} onLoad={this.onApiLoad} />;
+  }
+
+  private getAddressVariants(query: string): string[] {
+    //return ['2-36 grafton street', '36-2 grafton street'];
+    return [query];
+  }
+
+  private getSuggestedPlaces(
+    query: string
+  ): Promise<google.maps.places.AutocompletePrediction[]> {
+    const { googlePlacesOptions = {} } = this.props;
+
+    const request: google.maps.places.AutocompletionRequest = {
+      ...googlePlacesOptions,
+      input: query
+    };
+
+    return new Promise((resolve, reject) => {
+      const getPlaces = (
+        predictions: google.maps.places.AutocompletePrediction[],
+        status: google.maps.places.PlacesServiceStatus
+      ) => {
+        if (status !== google.maps.places.PlacesServiceStatus.OK) {
+          resolve([]);
+          return;
+        }
+
+        resolve(predictions);
+      };
+
+      if (this.autocompleteService) {
+        this.autocompleteService.getPlacePredictions(request, getPlaces);
+      } else {
+        reject('Google Places autocomplete service is not available.');
+      }
+    });
   }
 
   private hasPartialPostalCode(
