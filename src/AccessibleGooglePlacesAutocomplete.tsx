@@ -168,11 +168,28 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       onClear();
     }
 
-    Promise.all(
+    Promise.all<google.maps.places.AutocompletePrediction[]>(
       this.getAddressVariants(query).map(this.getSuggestedPlaces.bind(this))
     ).then(suggestions => {
-      // TODO zip merge result arrays
-      populateResults(suggestions[0]);
+      const results: google.maps.places.AutocompletePrediction[] = [];
+
+      const length = suggestions.reduce(
+        (max: number, values: google.maps.places.AutocompletePrediction[]) =>
+          values.length > max ? values.length : max,
+        0
+      );
+
+      for (let i = 0; i < length; i++) {
+        for (const values of suggestions) {
+          if (values.length > i) {
+            results.push(values[i]);
+          }
+        }
+      }
+
+      this.predictions = results;
+
+      populateResults(results.map(result => result.description));
     });
   }
 
@@ -209,10 +226,13 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   }
 
   private getAddressVariants(query: string): string[] {
+    //return ['2-36 grafton street', '36-2 grafton street'];
     return [query];
   }
 
-  private getSuggestedPlaces(query: string): Promise<string[]> {
+  private getSuggestedPlaces(
+    query: string
+  ): Promise<google.maps.places.AutocompletePrediction[]> {
     const { googlePlacesOptions = {} } = this.props;
 
     const request: google.maps.places.AutocompletionRequest = {
@@ -230,8 +250,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
           return;
         }
 
-        const results = predictions.map(prediction => prediction.description);
-        resolve(results);
+        resolve(predictions);
       };
 
       if (this.autocompleteService) {
