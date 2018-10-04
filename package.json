@@ -12,13 +12,11 @@
   "types": "dist/types/AccessibleGooglePlacesAutocomplete.d.ts",
   "dependencies": {
     "@types/get-value": "^3.0.0",
-    "@types/googlemaps": "^3.30.11",
-    "@types/uuid": "^3.4.3",
+    "@types/googlemaps": "^3.30.13",
     "accessible-autocomplete": "^1.6.1",
     "get-value": "^3.0.1",
     "prop-types": "^15.6.2",
-    "react-load-script": "^0.0.6",
-    "uuid": "^3.3.2"
+    "react-load-script": "^0.0.6"
   },
   "peerDependencies": {
     "react": "^15.4.2||^16.4.1",
