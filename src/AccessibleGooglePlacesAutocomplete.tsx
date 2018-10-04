@@ -81,10 +81,8 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   IAccessibleGooglePlacesAutocompleteState
 > {
   private geocoderService?: google.maps.Geocoder;
-
   private autocompleteService?: google.maps.places.AutocompleteService;
   private placesService?: google.maps.places.PlacesService;
-
   private placesSessionToken: google.maps.places.AutocompleteSessionToken;
   private predictions: google.maps.places.AutocompletePrediction[];
   private currentStatusMessage: string;
