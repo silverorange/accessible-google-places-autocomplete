@@ -30,6 +30,11 @@ interface IAccessibleGooglePlacesAutocompleteState {
   apiLoaded: boolean;
 }
 
+interface IParseUnitNumberResult {
+  civicAddress: string;
+  unitNumber: string;
+}
+
 export class AccessibleGooglePlacesAutocomplete extends React.Component<
   IAccessibleGooglePlacesAutocompleteProps,
   IAccessibleGooglePlacesAutocompleteState
@@ -41,6 +46,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   private predictions: google.maps.places.AutocompletePrediction[];
   private currentStatusMessage: string;
   private hasPlaceSelected: boolean;
+  private unitNumber: string;
 
   constructor(props: IAccessibleGooglePlacesAutocompleteProps) {
     super(props);
@@ -50,6 +56,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     };
 
     this.predictions = [];
+    this.unitNumber = '';
     this.currentStatusMessage = '';
 
     this.onApiLoad = this.onApiLoad.bind(this);
@@ -94,6 +101,17 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
               component.types.includes('postal_code')
             )
           );
+        }
+
+        // Add unit-number to address components if applicable. This is a
+        // custom field not returned by Google Places. See
+        // https://developers.google.com/maps/documentation/geocoding/intro#Types
+        if (this.unitNumber !== '') {
+          placeResult.address_components.push({
+            long_name: this.unitNumber,
+            short_name: this.unitNumber,
+            types: ['unit_number']
+          });
         }
 
         this.hasPlaceSelected = true;
@@ -166,10 +184,11 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
 
   public getSuggestions(query: string, populateResults: any): void {
     const { googlePlacesOptions = {}, onClear = () => null } = this.props;
+    const { civicAddress, unitNumber } = this.parseUnitNumber(query);
 
     const request: google.maps.places.AutocompletionRequest = {
       ...googlePlacesOptions,
-      input: query,
+      input: civicAddress,
       sessionToken: this.placesSessionToken
     };
 
@@ -183,7 +202,10 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       }
 
       this.predictions = predictions;
-      const results = predictions.map(prediction => prediction.description);
+      this.unitNumber = unitNumber;
+      const results = predictions.map(prediction =>
+        this.formatPrediction(prediction.description, unitNumber)
+      );
       populateResults(results);
     };
 
@@ -228,6 +250,22 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     }
 
     return <Script url={googlePlacesApi} onLoad={this.onApiLoad} />;
+  }
+
+  private parseUnitNumber(query: string): IParseUnitNumberResult {
+    // TODO parse out common unit number formats
+    return {
+      civicAddress: query,
+      unitNumber: '2'
+    };
+  }
+
+  private formatPrediction(civicAddress: string, unitNumber: string): string {
+    if (unitNumber === '') {
+      return civicAddress;
+    }
+
+    return `${unitNumber}-${civicAddress}`;
   }
 
   private hasPartialPostalCode(
