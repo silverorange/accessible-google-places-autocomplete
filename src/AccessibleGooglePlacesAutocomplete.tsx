@@ -284,9 +284,11 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     unitDesignator: string,
     unitNumber: string
   ): string {
-    // TODO: If there is a designator, display it properly after the street name.
     if (unitDesignator !== '') {
-      return `${civicAddress} ${unitDesignator} ${unitNumber}`;
+      const unitAddress = `${unitDesignator} ${unitNumber}`;
+
+      // Insert unit number and designator after first comma
+      return civicAddress.replace(/,/, ` ${unitAddress},`);
     }
 
     if (unitNumber !== '') {
