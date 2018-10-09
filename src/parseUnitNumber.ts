@@ -39,8 +39,34 @@ export function parseUnitNumber(query: string): IParseUnitNumberResult {
     ste: 'suite'
   };
 
+  // Needs to go before after-street case to prevent parsing civic number as a
+  // full street address.
+  const afterNumber = new RegExp(
+    `^\\s*([0-9]+)\\s+${designators}\\s*([0-9]+|[a-z])([\\s,].*)$`,
+    'i'
+  );
+  const afterNumberMatches = afterNumber.exec(query);
+  if (afterNumberMatches !== null) {
+    const designator = afterNumberMatches[2]
+      .replace(/\./, '')
+      .toLocaleLowerCase();
+
+    const normalizedDesignator = normalizedDesignators[designator]
+      ? normalizedDesignators[designator]
+      : designator;
+
+    return {
+      civicAddress: `${afterNumberMatches[1].replace(
+        /[\s,]*$/,
+        ''
+      )} ${afterNumberMatches[4].replace(/^[\s,]*/, '')}`,
+      unitDesignator: normalizedDesignator,
+      unitNumber: afterNumberMatches[3]
+    };
+  }
+
   const afterStreet = new RegExp(
-    `^\\s*([0-9]+.+)\\s${designators}\\s*([0-9]+|[a-z])(.*)$`,
+    `^\\s*([0-9]+.+)\\s${designators}\\s*([0-9]+|[a-z])([\\s,].*)$`,
     'i'
   );
   const afterStreetMatches = afterStreet.exec(query);
@@ -60,6 +86,27 @@ export function parseUnitNumber(query: string): IParseUnitNumberResult {
       )}, ${afterStreetMatches[4].replace(/^[\s,]*/, '')}`,
       unitDesignator: normalizedDesignator,
       unitNumber: afterStreetMatches[3]
+    };
+  }
+
+  const beforeCivicNumber = new RegExp(
+    `^\\s*${designators}\\s*([0-9]+|[a-z])[-\\s,]+(.*)$`,
+    'i'
+  );
+  const beforeCivicNumberMatches = beforeCivicNumber.exec(query);
+  if (beforeCivicNumberMatches !== null) {
+    const designator = beforeCivicNumberMatches[1]
+      .replace(/\./, '')
+      .toLocaleLowerCase();
+
+    const normalizedDesignator = normalizedDesignators[designator]
+      ? normalizedDesignators[designator]
+      : designator;
+
+    return {
+      civicAddress: beforeCivicNumberMatches[3].replace(/^\s*/, ''),
+      unitDesignator: normalizedDesignator,
+      unitNumber: beforeCivicNumberMatches[2]
     };
   }
 
