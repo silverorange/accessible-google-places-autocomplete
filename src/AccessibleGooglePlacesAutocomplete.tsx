@@ -41,6 +41,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   private placesSessionToken: google.maps.places.AutocompleteSessionToken;
   private predictions: google.maps.places.AutocompletePrediction[];
   private currentStatusMessage: string;
+  private formattedPredictionsMap: Record<string, string>;
   private hasPlaceSelected: boolean;
   private unitDesignator: string;
   private unitNumber: string;
@@ -52,6 +53,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       apiLoaded: false
     };
 
+    this.formattedPredictionsMap = {};
     this.predictions = [];
     this.unitDesignator = '';
     this.unitNumber = '';
@@ -74,8 +76,9 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       onConfirm = () => null
     } = this.props;
 
+    const placeId = this.formattedPredictionsMap[value];
     const selectedPrediction = this.predictions.find(
-      prediction => prediction.description === value
+      prediction => prediction.place_id === placeId
     );
 
     if (selectedPrediction !== undefined) {
@@ -226,13 +229,22 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       this.predictions = predictions;
       this.unitNumber = unitNumber;
       this.unitDesignator = unitDesignator;
-      const results = predictions.map(prediction =>
-        this.formatPrediction(
-          prediction.description,
-          unitDesignator,
-          unitNumber
-        )
+      this.formattedPredictionsMap = predictions.reduce(
+        (accumulator, prediction) => {
+          const key = this.formatPrediction(
+            prediction.description,
+            unitDesignator,
+            unitNumber
+          );
+          return {
+            ...accumulator,
+            [key]: prediction.place_id
+          };
+        },
+        {}
       );
+
+      const results = Object.keys(this.formattedPredictionsMap);
       populateResults(results);
     };
 
