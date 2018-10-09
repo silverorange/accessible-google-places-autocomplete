@@ -19,6 +19,7 @@ interface IAccessibleGooglePlacesAutocompleteProps {
     onError?: (error: any) => void;
     required?: boolean;
     t?: any;
+    unitDesignators?: Record<string, string>;
     useMoreAccuratePostalCode?: boolean;
 }
 interface IAccessibleGooglePlacesAutocompleteState {
@@ -31,7 +32,10 @@ export declare class AccessibleGooglePlacesAutocomplete extends React.Component<
     private placesSessionToken;
     private predictions;
     private currentStatusMessage;
+    private formattedPredictionsMap;
     private hasPlaceSelected;
+    private unitDesignator;
+    private unitNumber;
     constructor(props: IAccessibleGooglePlacesAutocompleteProps);
     onAutoCompleteSelect: (value: string) => Promise<void>;
     onApiLoad(): void;
@@ -41,8 +45,27 @@ export declare class AccessibleGooglePlacesAutocomplete extends React.Component<
     getStatusResultsMessage(length: number, contentSelectedOption: string): string;
     getSuggestions(query: string, populateResults: any): void;
     render(): JSX.Element;
+    private formatPrediction;
     private hasPartialPostalCode;
     private getPlaceDetails;
     private getReverseGeocodeData;
 }
+export declare const DEFAULT_UNIT_DESIGNATORS: {
+    '#': string;
+    apartment: string;
+    building: string;
+    department: string;
+    floor: string;
+    hanger: string;
+    key: string;
+    lot: string;
+    pier: string;
+    room: string;
+    slip: string;
+    space: string;
+    stop: string;
+    suite: string;
+    trailer: string;
+    unit: string;
+};
 export {};
