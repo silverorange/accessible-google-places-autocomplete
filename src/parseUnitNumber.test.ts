@@ -61,6 +61,79 @@ describe('parseUnitNumber', () => {
       );
       expect(results.unitDesignator).toEqual('');
     });
+
+    it('detects letter unit after civic number with leading space', () => {
+      const results = parseUnitNumber(
+        ' 36 C Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('');
+    });
+  });
+
+  describe('letter numbers', () => {
+    it('converts letter unit after number to uppercase', () => {
+      const results = parseUnitNumber('36 c Grafton Street, Charlottetown, PE');
+      expect(results.unitNumber).toEqual('C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('');
+    });
+
+    it('converts letter unit before number to uppercase', () => {
+      const results = parseUnitNumber('c-36 Grafton Street, Charlottetown, PE');
+      expect(results.unitNumber).toEqual('C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('');
+    });
+
+    it('converts letter unit before number to uppercase', () => {
+      const results = parseUnitNumber('c-36 Grafton Street, Charlottetown, PE');
+      expect(results.unitNumber).toEqual('C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('');
+    });
+
+    it('converts lettered unit after civic number to uppercase', () => {
+      const results = parseUnitNumber(
+        '36 apt. c Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('apt');
+    });
+
+    it('converts lettered unit before civic number to uppercase', () => {
+      const results = parseUnitNumber(
+        'Apt. c, 36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('apt');
+    });
+
+    it('detects lettered unit after street name to uppercase', () => {
+      const results = parseUnitNumber(
+        '36 Grafton Street apt. c, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('apt');
+    });
   });
 
   describe('after civic number', () => {

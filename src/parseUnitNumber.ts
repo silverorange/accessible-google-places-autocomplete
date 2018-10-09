@@ -46,17 +46,19 @@ export function parseUnitNumber(query: string): IParseUnitNumberResult {
     return {
       civicAddress: dashedMatches[2],
       unitDesignator: '',
-      unitNumber: dashedMatches[1]
+      unitNumber: dashedMatches[1].toUpperCase()
     };
   }
 
   // Match dashed address formats where the unit is a letter after the street number.
-  const dashedLetterMatches = /^([0-9]+)[\s-–]*([a-z])\s(.*)\s*$/i.exec(query);
+  const dashedLetterMatches = /^\s*([0-9]+)[\s-–]*([a-z])\s(.*)\s*$/i.exec(
+    query
+  );
   if (dashedLetterMatches !== null) {
     return {
       civicAddress: `${dashedLetterMatches[1]} ${dashedLetterMatches[3]}`,
       unitDesignator: '',
-      unitNumber: dashedLetterMatches[2]
+      unitNumber: dashedLetterMatches[2].toUpperCase()
     };
   }
 
@@ -77,7 +79,7 @@ export function parseUnitNumber(query: string): IParseUnitNumberResult {
         ''
       )} ${afterNumberMatches[4].replace(/^[\s,]*/, '')}`,
       unitDesignator,
-      unitNumber: afterNumberMatches[3]
+      unitNumber: afterNumberMatches[3].toUpperCase()
     };
   }
 
@@ -96,7 +98,7 @@ export function parseUnitNumber(query: string): IParseUnitNumberResult {
         ''
       )}, ${afterStreetMatches[4].replace(/^[\s,]*/, '')}`,
       unitDesignator,
-      unitNumber: afterStreetMatches[3]
+      unitNumber: afterStreetMatches[3].toUpperCase()
     };
   }
 
@@ -112,7 +114,7 @@ export function parseUnitNumber(query: string): IParseUnitNumberResult {
     return {
       civicAddress: beforeCivicNumberMatches[3].replace(/^\s*/, ''),
       unitDesignator,
-      unitNumber: beforeCivicNumberMatches[2]
+      unitNumber: beforeCivicNumberMatches[2].toUpperCase()
     };
   }
 
