@@ -48,8 +48,8 @@ export default function AddressView(props) {
   return (
     <div className="address">
       <div className="address__line1">
-        {combinedNumber}
-        {subunit} {streetName}
+        {combinedNumber} {streetName}
+        {subunit}
       </div>
       <div className="address__line2">
         {city} {provState}
