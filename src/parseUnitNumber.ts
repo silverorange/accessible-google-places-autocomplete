@@ -5,6 +5,28 @@ export interface IParseUnitNumberResult {
 }
 
 export function parseUnitNumber(query: string): IParseUnitNumberResult {
+  // Match dashed address formats where the unit goes before the street number.
+  const dashedMatches = /^\s*([0-9]+|[a-z])[\s-–]+([0-9]+\s.*)\s*$/i.exec(
+    query
+  );
+  if (dashedMatches !== null) {
+    return {
+      civicAddress: dashedMatches[2],
+      unitDesignator: '',
+      unitNumber: dashedMatches[1]
+    };
+  }
+
+  // Match dashed address formats where the unit is a letter after the street number.
+  const dashedLetterMatches = /^([0-9]+)[\s-–]*([a-z])\s(.*)\s*$/i.exec(query);
+  if (dashedLetterMatches !== null) {
+    return {
+      civicAddress: `${dashedLetterMatches[1]} ${dashedLetterMatches[3]}`,
+      unitDesignator: '',
+      unitNumber: dashedLetterMatches[2]
+    };
+  }
+
   return {
     civicAddress: query,
     unitDesignator: 'apt',
