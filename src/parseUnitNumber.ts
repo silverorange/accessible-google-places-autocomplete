@@ -27,6 +27,16 @@ const designators = Object.keys(normalizedDesignators)
   }, [])
   .join('|');
 
+// Removes any trailing . characters and normalizes to the preferred designator
+// abbreviation.
+function normalizeDesignator(designator: string): string {
+  const strippedDesignator = designator.replace(/\./, '').toLocaleLowerCase();
+
+  return normalizedDesignators[strippedDesignator] !== undefined
+    ? normalizedDesignators[strippedDesignator]
+    : strippedDesignator;
+}
+
 export function parseUnitNumber(query: string): IParseUnitNumberResult {
   // Match dashed address formats where the unit goes before the street number.
   const dashedMatches = /^[\s#]*([0-9]+|[a-z])[\s-–]+([0-9]+\s.*)\s*$/i.exec(
@@ -112,14 +122,4 @@ export function parseUnitNumber(query: string): IParseUnitNumberResult {
     unitDesignator: '',
     unitNumber: ''
   };
-}
-
-// Removes any trailing . characters and normalizes to the preferred designator
-// abbreviation.
-function normalizeDesignator(designator: string): string {
-  const strippedDesignator = designator.replace(/\./, '').toLocaleLowerCase();
-
-  return normalizedDesignators[strippedDesignator] !== undefined
-    ? normalizedDesignators[strippedDesignator]
-    : strippedDesignator;
 }
