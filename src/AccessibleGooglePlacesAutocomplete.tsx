@@ -1,5 +1,3 @@
-declare var google: any;
-
 import * as React from 'react';
 import * as Script from 'react-load-script';
 import Autocomplete from 'accessible-autocomplete/react';
@@ -83,6 +81,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   private geocoderService?: google.maps.Geocoder;
   private autocompleteService?: google.maps.places.AutocompleteService;
   private placesService?: google.maps.places.PlacesService;
+  private placesSessionToken: google.maps.places.AutocompleteSessionToken;
   private predictions: google.maps.places.AutocompletePrediction[];
   private currentStatusMessage: string;
   private hasPlaceSelected: boolean;
@@ -142,6 +141,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
         }
 
         this.hasPlaceSelected = true;
+        this.placesSessionToken = new google.maps.places.AutocompleteSessionToken();
 
         onConfirm(placeResult);
       } catch (e) {
@@ -157,6 +157,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     this.placesService = new google.maps.places.PlacesService(
       document.createElement('div')
     );
+    this.placesSessionToken = new google.maps.places.AutocompleteSessionToken();
   }
 
   public getNoResultsMessage(): string {
@@ -212,7 +213,8 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
 
     const request: google.maps.places.AutocompletionRequest = {
       ...googlePlacesOptions,
-      input: query
+      input: query,
+      sessionToken: this.placesSessionToken
     };
 
     const getPlaces = (
@@ -292,7 +294,8 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     return new Promise((resolve, reject) => {
       this.placesService!.getDetails(
         {
-          placeId: prediction.place_id
+          placeId: prediction.place_id,
+          sessionToken: this.placesSessionToken
         },
         (
           placeResult: google.maps.places.PlaceResult,
