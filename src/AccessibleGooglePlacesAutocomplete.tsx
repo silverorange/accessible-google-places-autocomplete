@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as Script from 'react-load-script';
 import Autocomplete from 'accessible-autocomplete/react';
 import { translate } from './translate';
-import { IParseUnitNumberResult, parseUnitNumber } from './parseUnitNumber';
+import { parseUnitNumber } from './parseUnitNumber';
 
 interface IAccessibleGooglePlacesAutocompleteOptions {
   bounds?: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral;
