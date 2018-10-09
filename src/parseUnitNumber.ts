@@ -85,18 +85,20 @@ export function parseUnitNumber(query: string): IParseUnitNumberResult {
 
   // Match unit number and designator after the street address.
   const afterStreet = new RegExp(
-    `^\\s*([0-9]+.+)\\s(${designators})\\s*([0-9]+|[a-z])([\\s,].*)$`,
+    `^\\s*([0-9]+.+)\\s(${designators})\\s*([0-9]+|[a-z])([\\s,].*|$)$`,
     'i'
   );
   const afterStreetMatches = afterStreet.exec(query);
   if (afterStreetMatches !== null) {
     const unitDesignator = normalizeDesignator(afterStreetMatches[2]);
+    const civicAddressPart1 = afterStreetMatches[1].replace(/[\s,]*$/, '');
+    const civicAddressPart2 = afterStreetMatches[4].replace(/^[\s,]*/, '');
+    const civicAddress = civicAddressPart2
+      ? `${civicAddressPart1}, ${civicAddressPart2}`
+      : civicAddressPart1;
 
     return {
-      civicAddress: `${afterStreetMatches[1].replace(
-        /[\s,]*$/,
-        ''
-      )}, ${afterStreetMatches[4].replace(/^[\s,]*/, '')}`,
+      civicAddress,
       unitDesignator,
       unitNumber: afterStreetMatches[3].toUpperCase()
     };

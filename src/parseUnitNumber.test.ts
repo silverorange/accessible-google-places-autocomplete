@@ -327,6 +327,13 @@ describe('parseUnitNumber', () => {
       );
       expect(results.unitDesignator).toEqual('apt');
     });
+
+    it('detects apt after street name at end of string', () => {
+      const results = parseUnitNumber('36 Grafton Street apt 12');
+      expect(results.unitNumber).toEqual('12');
+      expect(results.civicAddress).toEqual('36 Grafton Street');
+      expect(results.unitDesignator).toEqual('apt');
+    });
   });
 
   describe('false positives', () => {
