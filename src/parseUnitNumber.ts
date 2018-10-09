@@ -4,6 +4,29 @@ export interface IParseUnitNumberResult {
   unitNumber: string;
 }
 
+// Mapping of full unit designator string to preferred abbreviation.
+const normalizedDesignators = {
+  '#': '',
+  apartment: 'apt',
+  building: 'bldg',
+  department: 'dept',
+  floor: 'fl',
+  room: 'rm',
+  suite: 'ste',
+  unit: 'unit'
+};
+
+// Combine designators and abbreviated designators into regex string.
+const designators = Object.keys(normalizedDesignators)
+  .reduce((accumulator, current) => {
+    const value = normalizedDesignators[current];
+    if (value !== '') {
+      return [...accumulator, current, `${value}\\.?`];
+    }
+    return [...accumulator, current];
+  }, [])
+  .join('|');
+
 export function parseUnitNumber(query: string): IParseUnitNumberResult {
   // Match dashed address formats where the unit goes before the street number.
   const dashedMatches = /^[\s#]*([0-9]+|[a-z])[\s-–]+([0-9]+\s.*)\s*$/i.exec(
@@ -27,92 +50,76 @@ export function parseUnitNumber(query: string): IParseUnitNumberResult {
     };
   }
 
-  const designators =
-    '(apt\\.?|apartment|bldg\\.?|building|dept\\.?|department|fl\\.?|floor|rm\\.?|room|ste\\.?|suite|unit)';
-
-  const normalizedDesignators = {
-    apt: 'apartment',
-    bldg: 'building',
-    dept: 'department',
-    fl: 'floor',
-    rm: 'room',
-    ste: 'suite'
-  };
-
-  // Needs to go before after-street case to prevent parsing civic number as a
-  // full street address.
+  // Match unit number and designator after the civic number and before the
+  // street name. Needs to go before after-street case to prevent parsing civic
+  // number as a full street address.
   const afterNumber = new RegExp(
-    `^\\s*([0-9]+)\\s+${designators}\\s*([0-9]+|[a-z])([\\s,].*)$`,
+    `^\\s*([0-9]+)\\s+(${designators})\\s*([0-9]+|[a-z])([\\s,].*)$`,
     'i'
   );
   const afterNumberMatches = afterNumber.exec(query);
   if (afterNumberMatches !== null) {
-    const designator = afterNumberMatches[2]
-      .replace(/\./, '')
-      .toLocaleLowerCase();
-
-    const normalizedDesignator = normalizedDesignators[designator]
-      ? normalizedDesignators[designator]
-      : designator;
+    const unitDesignator = normalizeDesignator(afterNumberMatches[2]);
 
     return {
       civicAddress: `${afterNumberMatches[1].replace(
         /[\s,]*$/,
         ''
       )} ${afterNumberMatches[4].replace(/^[\s,]*/, '')}`,
-      unitDesignator: normalizedDesignator,
+      unitDesignator,
       unitNumber: afterNumberMatches[3]
     };
   }
 
+  // Match unit number and designator after the street address.
   const afterStreet = new RegExp(
-    `^\\s*([0-9]+.+)\\s${designators}\\s*([0-9]+|[a-z])([\\s,].*)$`,
+    `^\\s*([0-9]+.+)\\s(${designators})\\s*([0-9]+|[a-z])([\\s,].*)$`,
     'i'
   );
   const afterStreetMatches = afterStreet.exec(query);
   if (afterStreetMatches !== null) {
-    const designator = afterStreetMatches[2]
-      .replace(/\./, '')
-      .toLocaleLowerCase();
-
-    const normalizedDesignator = normalizedDesignators[designator]
-      ? normalizedDesignators[designator]
-      : designator;
+    const unitDesignator = normalizeDesignator(afterStreetMatches[2]);
 
     return {
       civicAddress: `${afterStreetMatches[1].replace(
         /[\s,]*$/,
         ''
       )}, ${afterStreetMatches[4].replace(/^[\s,]*/, '')}`,
-      unitDesignator: normalizedDesignator,
+      unitDesignator,
       unitNumber: afterStreetMatches[3]
     };
   }
 
+  // Match unit number and designator before the civic number.
   const beforeCivicNumber = new RegExp(
-    `^\\s*${designators}\\s*([0-9]+|[a-z])[-\\s,]+(.*)$`,
+    `^\\s*(${designators})\\s*([0-9]+|[a-z])[-\\s,]+(.*)$`,
     'i'
   );
   const beforeCivicNumberMatches = beforeCivicNumber.exec(query);
   if (beforeCivicNumberMatches !== null) {
-    const designator = beforeCivicNumberMatches[1]
-      .replace(/\./, '')
-      .toLocaleLowerCase();
-
-    const normalizedDesignator = normalizedDesignators[designator]
-      ? normalizedDesignators[designator]
-      : designator;
+    const unitDesignator = normalizeDesignator(beforeCivicNumberMatches[1]);
 
     return {
       civicAddress: beforeCivicNumberMatches[3].replace(/^\s*/, ''),
-      unitDesignator: normalizedDesignator,
+      unitDesignator,
       unitNumber: beforeCivicNumberMatches[2]
     };
   }
 
+  // No unit number was parsed in the given address.
   return {
     civicAddress: query,
-    unitDesignator: 'apt',
-    unitNumber: '2'
+    unitDesignator: '',
+    unitNumber: ''
   };
+}
+
+// Removes any trailing . characters and normalizes to the preferred designator
+// abbreviation.
+function normalizeDesignator(designator: string): string {
+  const strippedDesignator = designator.replace(/\./, '').toLocaleLowerCase();
+
+  return normalizedDesignators[strippedDesignator] !== undefined
+    ? normalizedDesignators[strippedDesignator]
+    : strippedDesignator;
 }
