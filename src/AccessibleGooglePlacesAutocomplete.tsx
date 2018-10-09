@@ -105,15 +105,20 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
         }
 
         if (
-          ['floor', 'room'].includes(this.unitDesignator) &&
+          ['fl', 'rm'].includes(this.unitDesignator) &&
           this.unitNumber !== ''
         ) {
+          const designatorMap = {
+            fl: 'floor',
+            rm: 'room'
+          };
+
           // If `room` or `floor` are parsed, add them to the address result the
           // same way Google does.
           placeResult.address_components.push({
             long_name: this.unitNumber,
             short_name: this.unitNumber,
-            types: [this.unitDesignator]
+            types: [designatorMap[this.unitDesignator]]
           });
         } else {
           // Add unit-number to address components if applicable. This is a
