@@ -12,10 +12,6 @@ input[type='text'] {
   background: #fff;
 }
 
-.autoCompleteApiLoading {
-  display: none;
-}
-
 .autocomplete__hint,
 .autocomplete__input {
   -webkit-appearance: none;
