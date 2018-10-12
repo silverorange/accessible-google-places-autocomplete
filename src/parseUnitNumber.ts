@@ -4,15 +4,25 @@ export interface IParseUnitNumberResult {
   unitNumber: string;
 }
 
-// Mapping of full unit designator string to preferred abbreviation.
+// Mapping of full unit designator string to preferred abbreviation. See
+// https://pe.usps.com/text/pub28/28apc_003.htm#ep538629 for a list of
+// supported unit number designators.
 const normalizedDesignators = {
   '#': '',
   apartment: 'apt',
   building: 'bldg',
   department: 'dept',
   floor: 'fl',
+  hanger: 'hngr',
+  key: 'key',
+  lot: 'lot',
+  pier: 'pier',
   room: 'rm',
+  slip: 'slip',
+  space: 'spc',
+  stop: 'stop',
   suite: 'ste',
+  trailer: 'trlr',
   unit: 'unit'
 };
 
@@ -20,7 +30,7 @@ const normalizedDesignators = {
 const designators = Object.keys(normalizedDesignators)
   .reduce((accumulator, current) => {
     const value = normalizedDesignators[current];
-    if (value !== '') {
+    if (value !== '' && value !== current) {
       return [...accumulator, current, `${value}\\.?`];
     }
     return [...accumulator, current];
