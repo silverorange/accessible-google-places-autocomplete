@@ -44,6 +44,17 @@ describe('parseUnitNumber', () => {
       expect(results.unitDesignator).toEqual('');
     });
 
+    it('detects letter-number unit', () => {
+      const results = parseUnitNumber(
+        '12C-36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('12C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('');
+    });
+
     it('detects dashed letter unit after civic number', () => {
       const results = parseUnitNumber('36-C Grafton Street, Charlottetown, PE');
       expect(results.unitNumber).toEqual('C');
@@ -170,6 +181,39 @@ describe('parseUnitNumber', () => {
       expect(results.unitDesignator).toEqual('apt');
     });
 
+    it('detects letter-number apt after civic number', () => {
+      const results = parseUnitNumber(
+        '36 apt 12C Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('12C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('apt');
+    });
+
+    it('detects letter-number with space apt after civic number', () => {
+      const results = parseUnitNumber(
+        '36 apt 12 C Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('12C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('apt');
+    });
+
+    it('detects letter-number with dash apt after civic number', () => {
+      const results = parseUnitNumber(
+        '36 apt 12-C Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('12C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('apt');
+    });
+
     it('detects lettered apartment after civic number', () => {
       const results = parseUnitNumber(
         '36 apt. C Grafton Street, Charlottetown, PE'
@@ -249,6 +293,39 @@ describe('parseUnitNumber', () => {
       expect(results.unitDesignator).toEqual('apt');
     });
 
+    it('detects letter-number apartment before civic number', () => {
+      const results = parseUnitNumber(
+        'Apt 12C, 36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('12C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('apt');
+    });
+
+    it('detects letter-number with space apartment before civic number', () => {
+      const results = parseUnitNumber(
+        'Apt 12 C, 36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('12C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('apt');
+    });
+
+    it('detects letter-number with dash apartment before civic number', () => {
+      const results = parseUnitNumber(
+        'Apt 12-C, 36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('12C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('apt');
+    });
+
     it('detects apt. before civic number with no comma', () => {
       const results = parseUnitNumber(
         'Apt. 12 36 Grafton Street, Charlottetown, PE'
@@ -311,6 +388,39 @@ describe('parseUnitNumber', () => {
         '36 Grafton Street apt. 12, Charlottetown, PE'
       );
       expect(results.unitNumber).toEqual('12');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('apt');
+    });
+
+    it('detects letter-number apt after street name', () => {
+      const results = parseUnitNumber(
+        '36 Grafton Street apt 12C, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('12C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('apt');
+    });
+
+    it('detects letter-number with space apt after street name', () => {
+      const results = parseUnitNumber(
+        '36 Grafton Street apt 12 C, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('12C');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('apt');
+    });
+
+    it('detects letter-number with dash apt after street name', () => {
+      const results = parseUnitNumber(
+        '36 Grafton Street apt 12-C, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('12C');
       expect(results.civicAddress).toEqual(
         '36 Grafton Street, Charlottetown, PE'
       );
