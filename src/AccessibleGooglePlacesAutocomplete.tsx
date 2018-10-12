@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as Script from 'react-load-script';
 import Autocomplete from 'accessible-autocomplete/react';
 import { translate } from './translate';
-import { parseUnitNumber } from './parseUnitNumber';
+import { DEFAULT_DESIGNATORS, parseUnitNumber } from './parseUnitNumber';
 
 interface IAccessibleGooglePlacesAutocompleteOptions {
   bounds?: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral;
@@ -24,6 +24,7 @@ interface IAccessibleGooglePlacesAutocompleteProps {
   onError?: (error: any) => void;
   required?: boolean;
   t?: any;
+  unitDesignators?: Record<string, string>;
   useMoreAccuratePostalCode?: boolean;
 }
 
@@ -213,8 +214,16 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   }
 
   public getSuggestions(query: string, populateResults: any): void {
-    const { googlePlacesOptions = {}, onClear = () => null } = this.props;
-    const { civicAddress, unitDesignator, unitNumber } = parseUnitNumber(query);
+    const {
+      googlePlacesOptions = {},
+      onClear = () => null,
+      unitDesignators
+    } = this.props;
+
+    const { civicAddress, unitDesignator, unitNumber } = parseUnitNumber(
+      query,
+      unitDesignators
+    );
 
     const request: google.maps.places.AutocompletionRequest = {
       ...googlePlacesOptions,
@@ -395,3 +404,5 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     });
   }
 }
+
+export const DEFAULT_UNIT_DESIGNATORS = DEFAULT_DESIGNATORS;
