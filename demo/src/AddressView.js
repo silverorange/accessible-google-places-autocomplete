@@ -27,10 +27,29 @@ export default function AddressView(props) {
   const country = getAddressComponent(address, ['country']);
   const postalCode = getAddressComponent(address, ['postal_code']);
 
+  const room = getAddressComponent(address, ['room']);
+  const floor = getAddressComponent(address, ['floor']);
+  const unitNumber = getAddressComponent(address, ['unit_number']);
+  const unitDesignator = getAddressComponent(address, ['unit_designator']);
+
+  const subunit = room
+    ? ` room ${room}`
+    : floor
+      ? ` floor ${floor}`
+      : unitDesignator
+        ? ` ${unitDesignator} ${unitNumber}`
+        : '';
+
+  const combinedNumber =
+    !floor && !room && !unitDesignator && unitNumber
+      ? `${unitNumber}-${streetNumber}`
+      : streetNumber;
+
   return (
     <div className="address">
       <div className="address__line1">
-        {streetNumber} {streetName}
+        {combinedNumber} {streetName}
+        {subunit}
       </div>
       <div className="address__line2">
         {city} {provState}

@@ -1,10 +1,20 @@
 import React, { Component } from 'react';
-import { AccessibleGooglePlacesAutocomplete } from 'accessible-google-places-autocomplete';
+import {
+  AccessibleGooglePlacesAutocomplete,
+  DEFAULT_UNIT_DESIGNATORS
+} from 'accessible-google-places-autocomplete';
 import AddressView from './AddressView';
 
 const googlePlacesOptions = {
   componentRestrictions: { country: 'CA' },
   types: ['geocode']
+};
+
+const unitDesignators = {
+  ...DEFAULT_UNIT_DESIGNATORS,
+  Appartement: 'app',
+  bureau: 'bureau',
+  unité: 'unité'
 };
 
 export default class App extends Component {
@@ -45,6 +55,7 @@ export default class App extends Component {
             googlePlacesOptions={googlePlacesOptions}
             onConfirm={this.onConfirm}
             onClear={this.onClear}
+            unitDesignators={unitDesignators}
             useMoreAccuratePostalCode
           />
         </form>

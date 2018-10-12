@@ -2,6 +2,7 @@ import * as React from 'react';
 import * as Script from 'react-load-script';
 import Autocomplete from 'accessible-autocomplete/react';
 import { translate } from './translate';
+import { DEFAULT_DESIGNATORS, parseUnitNumber } from './parseUnitNumber';
 
 interface IAccessibleGooglePlacesAutocompleteOptions {
   bounds?: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral;
@@ -23,6 +24,7 @@ interface IAccessibleGooglePlacesAutocompleteProps {
   onError?: (error: any) => void;
   required?: boolean;
   t?: any;
+  unitDesignators?: Record<string, string>;
   useMoreAccuratePostalCode?: boolean;
 }
 
@@ -40,7 +42,10 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   private placesSessionToken: google.maps.places.AutocompleteSessionToken;
   private predictions: google.maps.places.AutocompletePrediction[];
   private currentStatusMessage: string;
+  private formattedPredictionsMap: Record<string, string>;
   private hasPlaceSelected: boolean;
+  private unitDesignator: string;
+  private unitNumber: string;
 
   constructor(props: IAccessibleGooglePlacesAutocompleteProps) {
     super(props);
@@ -49,7 +54,10 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       apiLoaded: false
     };
 
+    this.formattedPredictionsMap = {};
     this.predictions = [];
+    this.unitDesignator = '';
+    this.unitNumber = '';
     this.currentStatusMessage = '';
 
     this.onApiLoad = this.onApiLoad.bind(this);
@@ -69,8 +77,9 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       onConfirm = () => null
     } = this.props;
 
+    const placeId = this.formattedPredictionsMap[value];
     const selectedPrediction = this.predictions.find(
-      prediction => prediction.description === value
+      prediction => prediction.place_id === placeId
     );
 
     if (selectedPrediction !== undefined) {
@@ -94,6 +103,46 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
               component.types.includes('postal_code')
             )
           );
+        }
+
+        if (
+          ['fl', 'rm'].includes(this.unitDesignator) &&
+          this.unitNumber !== ''
+        ) {
+          const designatorMap = {
+            fl: 'floor',
+            rm: 'room'
+          };
+
+          // If `room` or `floor` are parsed, add them to the address result the
+          // same way Google does.
+          placeResult.address_components.push({
+            long_name: this.unitNumber,
+            short_name: this.unitNumber,
+            types: [designatorMap[this.unitDesignator]]
+          });
+        } else {
+          // Add unit-number to address components if applicable. This is a
+          // custom field not returned by Google Places. See
+          // https://developers.google.com/maps/documentation/geocoding/intro#Types
+          if (this.unitNumber !== '') {
+            placeResult.address_components.push({
+              long_name: this.unitNumber,
+              short_name: this.unitNumber,
+              types: ['unit_number']
+            });
+          }
+
+          // Add unit-designator to address components if applicable. This is a
+          // custom field not returned by Google Places. See
+          // https://developers.google.com/maps/documentation/geocoding/intro#Types
+          if (this.unitDesignator !== '') {
+            placeResult.address_components.push({
+              long_name: this.unitDesignator,
+              short_name: this.unitDesignator,
+              types: ['unit_designator']
+            });
+          }
         }
 
         this.hasPlaceSelected = true;
@@ -165,11 +214,20 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   }
 
   public getSuggestions(query: string, populateResults: any): void {
-    const { googlePlacesOptions = {}, onClear = () => null } = this.props;
+    const {
+      googlePlacesOptions = {},
+      onClear = () => null,
+      unitDesignators
+    } = this.props;
+
+    const { civicAddress, unitDesignator, unitNumber } = parseUnitNumber(
+      query,
+      unitDesignators
+    );
 
     const request: google.maps.places.AutocompletionRequest = {
       ...googlePlacesOptions,
-      input: query,
+      input: civicAddress,
       sessionToken: this.placesSessionToken
     };
 
@@ -183,7 +241,24 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       }
 
       this.predictions = predictions;
-      const results = predictions.map(prediction => prediction.description);
+      this.unitNumber = unitNumber;
+      this.unitDesignator = unitDesignator;
+      this.formattedPredictionsMap = predictions.reduce(
+        (accumulator, prediction) => {
+          const key = this.formatPrediction(
+            prediction.description,
+            unitDesignator,
+            unitNumber
+          );
+          return {
+            ...accumulator,
+            [key]: prediction.place_id
+          };
+        },
+        {}
+      );
+
+      const results = Object.keys(this.formattedPredictionsMap);
       populateResults(results);
     };
 
@@ -228,6 +303,25 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     }
 
     return <Script url={googlePlacesApi} onLoad={this.onApiLoad} />;
+  }
+
+  private formatPrediction(
+    civicAddress: string,
+    unitDesignator: string,
+    unitNumber: string
+  ): string {
+    if (unitDesignator !== '') {
+      const unitAddress = `${unitDesignator} ${unitNumber}`;
+
+      // Insert unit number and designator after first comma
+      return civicAddress.replace(/,/, ` ${unitAddress},`);
+    }
+
+    if (unitNumber !== '') {
+      return `${unitNumber}-${civicAddress}`;
+    }
+
+    return civicAddress;
   }
 
   private hasPartialPostalCode(
@@ -310,3 +404,5 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     });
   }
 }
+
+export const DEFAULT_UNIT_DESIGNATORS = DEFAULT_DESIGNATORS;
