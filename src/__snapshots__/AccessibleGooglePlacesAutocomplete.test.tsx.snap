@@ -3,7 +3,11 @@
 exports[`renders correctly 1`] = `
 <div
   aria-live="polite"
-  className="autoCompleteApiLoading"
+  style={
+    Object {
+      "visibility": "hidden",
+    }
+  }
 >
   <div
     aria-expanded="false"
