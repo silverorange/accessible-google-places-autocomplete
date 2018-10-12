@@ -39,7 +39,7 @@ function normalizeDesignator(designator: string): string {
 
 export function parseUnitNumber(query: string): IParseUnitNumberResult {
   // Match dashed address formats where the unit goes before the street number.
-  const dashedMatches = /^[\s#]*([0-9]+|[a-z])[\s-–]+([0-9]+\s.*)\s*$/i.exec(
+  const dashedMatches = /^[\s#]*([0-9]+|[a-z])[\s-–\/]+([0-9]+\s.*)\s*$/i.exec(
     query
   );
   if (dashedMatches !== null) {
@@ -51,7 +51,7 @@ export function parseUnitNumber(query: string): IParseUnitNumberResult {
   }
 
   // Match dashed address formats where the unit is a letter after the street number.
-  const dashedLetterMatches = /^\s*([0-9]+)[\s-–]*([a-z])\s(.*)\s*$/i.exec(
+  const dashedLetterMatches = /^\s*([0-9]+)[\s-–\/]*([a-z])\s(.*)\s*$/i.exec(
     query
   );
   if (dashedLetterMatches !== null) {

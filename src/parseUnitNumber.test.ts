@@ -180,6 +180,17 @@ describe('parseUnitNumber', () => {
       );
       expect(results.unitDesignator).toEqual('apt');
     });
+
+    it('detects slashed unit', () => {
+      const results = parseUnitNumber(
+        '12 / 36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitNumber).toEqual('12');
+      expect(results.civicAddress).toEqual(
+        '36 Grafton Street, Charlottetown, PE'
+      );
+      expect(results.unitDesignator).toEqual('');
+    });
   });
 
   describe('before civic number', () => {
