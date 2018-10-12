@@ -286,6 +286,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
 
     return (
       <div
+        aria-live="polite"
         className={
           apiLoaded ? 'autoCompleteApiLoaded' : 'autoCompleteApiLoading'
         }
