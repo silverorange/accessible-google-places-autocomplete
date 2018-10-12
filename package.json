@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": "https://github.com/silverorange/accessible-google-places-autocomplete",
   "description": "Accessible Google Places autocomplete component for React",
-  "version": "1.2.0",
+  "version": "2.1.0",
   "main": "dist/AccessibleGooglePlacesAutocomplete.es5.js",
   "types": "dist/types/AccessibleGooglePlacesAutocomplete.d.ts",
   "dependencies": {
