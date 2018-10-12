@@ -7,7 +7,7 @@ export interface IParseUnitNumberResult {
 // Mapping of full unit designator string to preferred abbreviation. See
 // https://pe.usps.com/text/pub28/28apc_003.htm#ep538629 for a list of
 // supported unit number designators.
-const normalizedDesignators = {
+export const DEFAULT_DESIGNATORS = {
   '#': '',
   apartment: 'apt',
   building: 'bldg',
@@ -26,37 +26,47 @@ const normalizedDesignators = {
   unit: 'unit'
 };
 
-// Combine designators and abbreviated designators into regex string.
-const designators = Object.keys(normalizedDesignators)
-  .reduce((accumulator, current) => {
-    const value = normalizedDesignators[current];
-    if (value !== '' && value !== current) {
-      return [...accumulator, current, `${value}\\.?`];
-    }
-    return [...accumulator, current];
-  }, [])
-  .join('|');
+function buildDesignatorExpression(unitDesignators: Record<string, string>) {
+  return Object.keys(unitDesignators)
+    .reduce((accumulator, current) => {
+      const value = unitDesignators[current];
+      if (value !== '' && value !== current) {
+        return [...accumulator, current, `${value}\\.?`];
+      }
+      return [...accumulator, current];
+    }, [])
+    .join('|');
+}
 
 // Matches Unit numbers that are all numbers, one letter, or numbers followed
 // by 1 letter.
 const unitNumberExp = '[0-9]+(?:[\\s-]?[a-z])?|[a-z]';
-
-// Removes any trailing . characters and normalizes to the preferred designator
-// abbreviation.
-function normalizeDesignator(designator: string): string {
-  const strippedDesignator = designator.replace(/\./, '').toLocaleLowerCase();
-
-  return normalizedDesignators[strippedDesignator] !== undefined
-    ? normalizedDesignators[strippedDesignator]
-    : strippedDesignator;
-}
 
 // Removes and space or dash separators from unit and returns in upper-case.
 function normalizeUnitNumber(unitNumber: string) {
   return unitNumber.replace(/[ -]/g, '').toUpperCase();
 }
 
-export function parseUnitNumber(query: string): IParseUnitNumberResult {
+// Removes any trailing . characters and normalizes to the preferred designator
+// abbreviation.
+function normalizeDesignator(
+  unitDesignators: Record<string, string>,
+  designator: string
+): string {
+  const strippedDesignator = designator.replace(/\./, '').toLocaleLowerCase();
+
+  return unitDesignators[strippedDesignator] !== undefined
+    ? unitDesignators[strippedDesignator]
+    : strippedDesignator;
+}
+
+export function parseUnitNumber(
+  query: string,
+  unitDesignators: Record<string, string> = DEFAULT_DESIGNATORS
+): IParseUnitNumberResult {
+  // Combine designators and abbreviated designators into regex string.
+  const designators = buildDesignatorExpression(unitDesignators);
+
   // Match dashed address formats where the unit goes before the street number.
   const dashedMatches = /^[\s#]*([0-9]+(?:[\s-]?[a-z])?|[a-z])[\s-–\/]+([0-9]+\s.*)\s*$/i.exec(
     query
@@ -90,7 +100,10 @@ export function parseUnitNumber(query: string): IParseUnitNumberResult {
   );
   const afterNumberMatches = afterNumber.exec(query);
   if (afterNumberMatches !== null) {
-    const unitDesignator = normalizeDesignator(afterNumberMatches[2]);
+    const unitDesignator = normalizeDesignator(
+      unitDesignators,
+      afterNumberMatches[2]
+    );
     const unitNumber = normalizeUnitNumber(afterNumberMatches[3]);
 
     return {
@@ -110,7 +123,10 @@ export function parseUnitNumber(query: string): IParseUnitNumberResult {
   );
   const afterStreetMatches = afterStreet.exec(query);
   if (afterStreetMatches !== null) {
-    const unitDesignator = normalizeDesignator(afterStreetMatches[2]);
+    const unitDesignator = normalizeDesignator(
+      unitDesignators,
+      afterStreetMatches[2]
+    );
     const unitNumber = normalizeUnitNumber(afterStreetMatches[3]);
     const civicAddressPart1 = afterStreetMatches[1].replace(/[\s,]*$/, '');
     const civicAddressPart2 = afterStreetMatches[4].replace(/^[\s,]*/, '');
@@ -132,7 +148,10 @@ export function parseUnitNumber(query: string): IParseUnitNumberResult {
   );
   const beforeCivicNumberMatches = beforeCivicNumber.exec(query);
   if (beforeCivicNumberMatches !== null) {
-    const unitDesignator = normalizeDesignator(beforeCivicNumberMatches[1]);
+    const unitDesignator = normalizeDesignator(
+      unitDesignators,
+      beforeCivicNumberMatches[1]
+    );
     const unitNumber = normalizeUnitNumber(beforeCivicNumberMatches[2]);
     return {
       civicAddress: beforeCivicNumberMatches[3].replace(/^\s*/, ''),
