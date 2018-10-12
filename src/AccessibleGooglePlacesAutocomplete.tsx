@@ -284,8 +284,13 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     const encodedKey = encodeURIComponent(googlePlacesApiKey);
     const googlePlacesApi = `https://maps.googleapis.com/maps/api/js?key=${encodedKey}&libraries=places`;
 
-    if (apiLoaded) {
-      return (
+    return (
+      <div
+        className={
+          apiLoaded ? 'autoCompleteApiLoaded' : 'autoCompleteApiLoading'
+        }
+      >
+        <Script url={googlePlacesApi} onLoad={this.onApiLoad} />
         <Autocomplete
           autoselect={autoselect}
           id={id}
@@ -299,10 +304,8 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
           tStatusResults={this.getStatusResultsMessage}
           onConfirm={this.onAutoCompleteSelect}
         />
-      );
-    }
-
-    return <Script url={googlePlacesApi} onLoad={this.onApiLoad} />;
+      </div>
+    );
   }
 
   private formatPrediction(
