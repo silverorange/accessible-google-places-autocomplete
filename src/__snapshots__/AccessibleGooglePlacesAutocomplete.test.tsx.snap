@@ -1,3 +1,67 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders correctly 1`] = `null`;
+exports[`renders correctly 1`] = `
+<div
+  aria-live="polite"
+  style={
+    Object {
+      "visibility": "hidden",
+    }
+  }
+>
+  <div
+    aria-expanded="false"
+    className="autocomplete__wrapper"
+    onKeyDown={[Function]}
+    role="combobox"
+  >
+    <div
+      aria-atomic="true"
+      aria-live="polite"
+      role="status"
+      style={
+        Object {
+          "border": "0",
+          "clip": "rect(0 0 0 0)",
+          "height": "1px",
+          "marginBottom": "-1px",
+          "marginRight": "-1px",
+          "overflow": "hidden",
+          "padding": "0",
+          "position": "absolute",
+          "whiteSpace": "nowrap",
+          "width": "1px",
+        }
+      }
+    >
+      Type in 4 or more characters for results.
+      <span>
+        ,,
+      </span>
+    </div>
+    
+    <input
+      aria-activedescendant={false}
+      aria-owns="address_input__listbox"
+      autoComplete="off"
+      className="autocomplete__input autocomplete__input--default"
+      id="address_input"
+      name="input-autocomplete"
+      onBlur={[Function]}
+      onChange={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      placeholder=""
+      required={false}
+      role="textbox"
+      type="text"
+      value=""
+    />
+    <ul
+      className="autocomplete__menu autocomplete__menu--overlay autocomplete__menu--hidden"
+      id="address_input__listbox"
+      role="listbox"
+    />
+  </div>
+</div>
+`;
