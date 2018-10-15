@@ -4,6 +4,8 @@ import Autocomplete from 'accessible-autocomplete/react';
 import { translate } from './translate';
 import { DEFAULT_DESIGNATORS, parseUnitNumber } from './parseUnitNumber';
 
+const DEFAULT_MIN_LENGTH = 4;
+
 interface IAccessibleGooglePlacesAutocompleteOptions {
   bounds?: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral;
   componentRestrictions?: google.maps.places.ComponentRestrictions;
@@ -216,6 +218,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
   public getSuggestions(query: string, populateResults: any): void {
     const {
       googlePlacesOptions = {},
+      minLength = DEFAULT_MIN_LENGTH,
       onClear = () => null,
       unitDesignators
     } = this.props;
@@ -224,6 +227,13 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       query,
       unitDesignators
     );
+
+    // After parsing the unit and designator, we need to check the minimum
+    // length again. This prevents sending empty strings to Google Places.
+    if (civicAddress.length < minLength) {
+      populateResults([]);
+      return;
+    }
 
     const request: google.maps.places.AutocompletionRequest = {
       ...googlePlacesOptions,
@@ -277,7 +287,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       autoselect = false,
       googlePlacesApiKey,
       id,
-      minLength = 4,
+      minLength = DEFAULT_MIN_LENGTH,
       required = false
     } = this.props;
     const { apiLoaded } = this.state;
