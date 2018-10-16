@@ -61,7 +61,7 @@ pipeline {
 
                 // Make sure the build output is unchanged from the current
                 // commit.
-                sh '[ "$(git status -s lib/ | wc -l)" -eq "0" ]'
+                sh '[ "$(git status -s dist/ | wc -l)" -eq "0" ]'
             }
             post {
                 failure {
