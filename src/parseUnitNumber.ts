@@ -38,13 +38,28 @@ function buildDesignatorExpression(unitDesignators: Record<string, string>) {
     .join('|');
 }
 
+// Matches Unit numbers that are one letter, unicode fractions, or full
+// fractions.
+const unitLetterOrFractionExp = '[a-z¼½¾]|(?:1/4|1/2|3/4)';
+
 // Matches Unit numbers that are all numbers, one letter, or numbers followed
-// by 1 letter.
-const unitNumberExp = '[0-9]+(?:[\\s-]?[a-z])?|[a-z]';
+// by 1 letter, unicode fractions, or full fractions. Letter or fractional
+// suffixes may be separated with space or dash. Full fraction form may be
+// separated only by space. Note that fractional units or standalone letters
+// are intentionally matched first.
+const unitNumberExp = `${unitLetterOrFractionExp}|\\d+(?:[\\s-]?[a-z¼½¾]|\\s?(?:1/4|1/2|3/4))?`;
 
 // Removes and space or dash separators from unit and returns in upper-case.
-function normalizeUnitNumber(unitNumber: string) {
-  return unitNumber.replace(/[ -]/g, '').toUpperCase();
+// Converts vulgar fraction characters to ASCII.
+function normalizeUnitNumber(unitNumber: string): string {
+  return unitNumber
+    .replace(/-/g, ' ') // replace dashes with spaces
+    .replace(/\s+([a-z])/gi, '$1') // remove spaces before letters
+    .replace(/¼/g, ' 1/4')
+    .replace(/½/g, ' 1/2')
+    .replace(/¾/g, ' 3/4')
+    .replace(/^\s+/g, '') // strip leading spaces
+    .toLocaleUpperCase();
 }
 
 // Removes any trailing . characters and normalizes to the preferred designator
@@ -68,26 +83,34 @@ export function parseUnitNumber(
   const designators = buildDesignatorExpression(unitDesignators);
 
   // Match dashed address formats where the unit goes before the street number.
-  const dashedMatches = /^[\s#]*([0-9]+(?:[\s-]?[a-z])?|[a-z])[\s-–\/]+([0-9]+\s.*)\s*$/i.exec(
-    query
+  const dashedExp = new RegExp(
+    `^[\\s#]*(${unitNumberExp})[\\s-–\\/]+([0-9]+\\s.*)\\s*$`,
+    'i'
   );
+
+  const dashedMatches = dashedExp.exec(query);
   if (dashedMatches !== null) {
+    const unitNumber = normalizeUnitNumber(dashedMatches[1]);
     return {
       civicAddress: dashedMatches[2],
       unitDesignator: '',
-      unitNumber: dashedMatches[1].toUpperCase()
+      unitNumber
     };
   }
 
-  // Match dashed address formats where the unit is a letter after the street number.
-  const dashedLetterMatches = /^\s*([0-9]+)[\s-–\/]*([a-z])\s(.*)\s*$/i.exec(
-    query
+  // Match dashed address formats where the unit is a letter or fraction after
+  // the street number.
+  const dashedLetterExp = new RegExp(
+    `^\\s*(\\d+)[\\s-–\\/]*(${unitLetterOrFractionExp})\\s(\\D.*)?\\s*$`,
+    'i'
   );
+  const dashedLetterMatches = dashedLetterExp.exec(query);
   if (dashedLetterMatches !== null) {
+    const unitNumber = normalizeUnitNumber(dashedLetterMatches[2]);
     return {
       civicAddress: `${dashedLetterMatches[1]} ${dashedLetterMatches[3]}`,
       unitDesignator: '',
-      unitNumber: dashedLetterMatches[2].toUpperCase()
+      unitNumber
     };
   }
 
@@ -95,7 +118,7 @@ export function parseUnitNumber(
   // street name. Needs to go before after-street case to prevent parsing civic
   // number as a full street address.
   const afterNumber = new RegExp(
-    `^\\s*([0-9]+)\\s+(${designators})\\s*(${unitNumberExp})([\\s,].*)$`,
+    `^\\s*(\\d+)\\s+(${designators})\\s*(${unitNumberExp})([\\s,].*)$`,
     'i'
   );
   const afterNumberMatches = afterNumber.exec(query);
@@ -105,7 +128,6 @@ export function parseUnitNumber(
       afterNumberMatches[2]
     );
     const unitNumber = normalizeUnitNumber(afterNumberMatches[3]);
-
     return {
       civicAddress: `${afterNumberMatches[1].replace(
         /[\s,]*$/,
@@ -118,7 +140,7 @@ export function parseUnitNumber(
 
   // Match unit number and designator after the street address.
   const afterStreet = new RegExp(
-    `^\\s*([0-9]+.+)\\s(${designators})\\s*(${unitNumberExp})([\\s,].*|$)$`,
+    `^\\s*(\\d+.+)\\s(${designators})\\s*(${unitNumberExp})([\\s,].*|$)$`,
     'i'
   );
   const afterStreetMatches = afterStreet.exec(query);
