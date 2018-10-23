@@ -1,5 +1,6 @@
 /// <reference types="googlemaps" />
 import * as React from 'react';
+import { TLanguageCode } from './languageCodes';
 interface IAccessibleGooglePlacesAutocompleteOptions {
     bounds?: google.maps.LatLngBounds | google.maps.LatLngBoundsLiteral;
     componentRestrictions?: google.maps.places.ComponentRestrictions;
@@ -13,6 +14,7 @@ interface IAccessibleGooglePlacesAutocompleteProps {
     googlePlacesApiKey: string;
     googlePlacesOptions?: IAccessibleGooglePlacesAutocompleteOptions;
     id: string;
+    language?: TLanguageCode;
     minLength?: number;
     onClear?: () => void;
     onConfirm?: (placeResult: google.maps.places.PlaceResult) => void;
@@ -39,11 +41,13 @@ export declare class AccessibleGooglePlacesAutocomplete extends React.Component<
     constructor(props: IAccessibleGooglePlacesAutocompleteProps);
     onAutoCompleteSelect: (value: string) => Promise<void>;
     onApiLoad(): void;
+    onApiUnload(): void;
     getNoResultsMessage(): string;
     getStatusSelectedOptionMessage(selectedOption: string): string;
     getStatusNoResultsMessage(): string;
     getStatusResultsMessage(length: number, contentSelectedOption: string): string;
     getSuggestions(query: string, populateResults: any): void;
+    componentDidUpdate(prevProps: IAccessibleGooglePlacesAutocompleteProps): void;
     render(): JSX.Element;
     private formatPrediction;
     private hasPartialPostalCode;
