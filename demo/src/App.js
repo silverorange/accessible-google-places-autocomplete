@@ -50,7 +50,7 @@ export default class App extends Component {
     return (
       <div className="App">
         <form>
-          <div>
+          <div className="languageControls">
             <label>
               <input
                 type="radio"
