@@ -9,7 +9,11 @@ declare module 'react-load-script' {
     attributes?: any;
   }
 
-  class Script extends React.Component<ScriptProps, any> {}
+  class Script extends React.Component<ScriptProps, any> {
+    public static loadedScripts: Record<string, boolean>;
+    public static erroredScripts: Record<string, boolean>;
+    public static scriptObservers: Record<string, any>;
+  }
 
   // react-load-script exports the component as both a default
   // (exports.default = Foo) and as an immediate class (module.exports = Foo).

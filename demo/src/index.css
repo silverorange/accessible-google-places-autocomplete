@@ -170,3 +170,11 @@ form {
   font-weight: bold;
   font-size: 24px;
 }
+
+.languageControls {
+	margin-bottom: 15px;
+}
+
+.languageControls label {
+	padding-right: 10px;
+}

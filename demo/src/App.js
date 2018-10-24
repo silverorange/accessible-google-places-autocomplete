@@ -21,9 +21,17 @@ export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      address: []
+      address: [],
+      language: 'en'
     };
   }
+
+  onSetLanguage = e => {
+    const language = e.target.value;
+    this.setState(_ => ({
+      language
+    }));
+  };
 
   onConfirm = place => {
     this.setState(_ => ({
@@ -38,10 +46,32 @@ export default class App extends Component {
   };
 
   render() {
-    const { address } = this.state;
+    const { address, language } = this.state;
     return (
       <div className="App">
         <form>
+          <div className="languageControls">
+            <label>
+              <input
+                type="radio"
+                name="language"
+                onChange={this.onSetLanguage}
+                value="en"
+                checked={language === 'en'}
+              />{' '}
+              English
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="language"
+                onChange={this.onSetLanguage}
+                value="fr"
+                checked={language === 'fr'}
+              />{' '}
+              French
+            </label>
+          </div>
           <label htmlFor="address_input" aria-describedby="address_note">
             What is your mailing address?
           </label>
@@ -53,6 +83,7 @@ export default class App extends Component {
             id="address_input"
             googlePlacesApiKey={process.env.REACT_APP_GOOGLE_PLACES_API_KEY}
             googlePlacesOptions={googlePlacesOptions}
+            language={language}
             onConfirm={this.onConfirm}
             onClear={this.onClear}
             unitDesignators={unitDesignators}

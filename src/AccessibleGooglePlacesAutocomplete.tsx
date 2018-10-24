@@ -1,8 +1,9 @@
 import * as React from 'react';
-import * as Script from 'react-load-script';
 import Autocomplete from 'accessible-autocomplete/react';
 import { translate } from './translate';
 import { DEFAULT_DESIGNATORS, parseUnitNumber } from './parseUnitNumber';
+import { TLanguageCode } from './languageCodes';
+import { GoogleMapsApiLoader } from './GoogleMapsApiLoader';
 
 const DEFAULT_MIN_LENGTH = 4;
 
@@ -20,6 +21,7 @@ interface IAccessibleGooglePlacesAutocompleteProps {
   googlePlacesApiKey: string;
   googlePlacesOptions?: IAccessibleGooglePlacesAutocompleteOptions;
   id: string;
+  language?: TLanguageCode;
   minLength?: number;
   onClear?: () => void;
   onConfirm?: (placeResult: google.maps.places.PlaceResult) => void;
@@ -63,6 +65,7 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     this.currentStatusMessage = '';
 
     this.onApiLoad = this.onApiLoad.bind(this);
+    this.onApiUnload = this.onApiUnload.bind(this);
     this.getSuggestions = this.getSuggestions.bind(this);
     this.getNoResultsMessage = this.getNoResultsMessage.bind(this);
     this.getStatusResultsMessage = this.getStatusResultsMessage.bind(this);
@@ -165,6 +168,14 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       document.createElement('div')
     );
     this.placesSessionToken = new google.maps.places.AutocompleteSessionToken();
+  }
+
+  public onApiUnload() {
+    this.setState(() => ({ apiLoaded: false }));
+    delete this.geocoderService;
+    delete this.autocompleteService;
+    delete this.placesService;
+    delete this.placesSessionToken;
   }
 
   public getNoResultsMessage(): string {
@@ -287,19 +298,24 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
       autoselect = false,
       googlePlacesApiKey,
       id,
+      language,
       minLength = DEFAULT_MIN_LENGTH,
       required = false
     } = this.props;
+
     const { apiLoaded } = this.state;
-    const encodedKey = encodeURIComponent(googlePlacesApiKey);
-    const googlePlacesApi = `https://maps.googleapis.com/maps/api/js?key=${encodedKey}&libraries=places`;
 
     return (
       <div
         aria-live="polite"
         style={{ visibility: apiLoaded ? 'visible' : 'hidden' }}
       >
-        <Script url={googlePlacesApi} onLoad={this.onApiLoad} />
+        <GoogleMapsApiLoader
+          googlePlacesApiKey={googlePlacesApiKey}
+          language={language}
+          onLoad={this.onApiLoad}
+          onUnload={this.onApiUnload}
+        />
         <Autocomplete
           autoselect={autoselect}
           id={id}
