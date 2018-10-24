@@ -1,5 +1,4 @@
 import * as React from 'react';
-// import * as Script from 'react-load-script';
 import Autocomplete from 'accessible-autocomplete/react';
 import { translate } from './translate';
 import { DEFAULT_DESIGNATORS, parseUnitNumber } from './parseUnitNumber';
@@ -291,16 +290,6 @@ export class AccessibleGooglePlacesAutocomplete extends React.Component<
     if (this.hasPlaceSelected) {
       this.hasPlaceSelected = false;
       onClear();
-    }
-  }
-  public componentDidUpdate(
-    prevProps: IAccessibleGooglePlacesAutocompleteProps
-  ) {
-    const { language } = this.props;
-    if (language !== prevProps.language) {
-      this.setState(() => ({
-        apiLoaded: false
-      }));
     }
   }
 
